@@ -1,0 +1,2137 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f6f3">
+<meta name="description" content="Explore crowd movement and measure how spatial changes affect throughput.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Crowd Flow Laboratory</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='0' fill='%23254140'/%3E%3Cpath d='M9 29V11h9m13 0v18h-9' fill='none' stroke='%23b6dfcb' stroke-width='3'/%3E%3Cpath d='M15 20h10m-4-4 4 4-4 4' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+<style>:root{--ink:#164b73;--muted:#546674;--accent:#546674;--accent-soft:#e9f1e9;--paper:#f5f6f3;--line:#e0e6df;--white:#fff;--ease:cubic-bezier(.22,.8,.24,1);font-family:Inter,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;font-synthesis:none;color:var(--ink);background:var(--paper);font-size:14px;line-height:1.5}
+*{box-sizing:border-box}body{margin:0}h1,h2,h3,p{margin:0}button,select,input{font:inherit}button,select{cursor:pointer}button{border:0;background:transparent;color:inherit;transition:background-color .22s var(--ease),color .22s var(--ease),border-color .22s var(--ease),transform .22s var(--ease)}button:active:not(:disabled){transform:scale(.97)}button:disabled{opacity:.35;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #91aabd;outline-offset:4px}a{color:var(--accent)}svg{display:block}button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}[hidden]{display:none!important}
+.site-header{max-width:1600px;margin:auto;padding:0 32px;height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}.brand-mark{display:grid;place-items:center;width:37px;height:37px;border-radius:0;background:#164b73;box-shadow:0 3px 8px #164b730c}.brand-mark svg{width:31px;height:31px;fill:none;stroke:#d8e2eb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.brand h1{font-size:16px;letter-spacing:-.45px;font-weight:550}.header-actions{display:flex;align-items:center;gap:26px}.text-button{font-size:12px;color:#546674;padding:6px 0;white-space:nowrap}.text-button:hover{color:#546674}.text-button.small{font-size:10px}.language-wrap{display:flex;align-items:center;gap:8px}.language-wrap svg{fill:none;stroke:#607d93;stroke-width:1.4;width:15px;height:15px}.language-wrap select{border:0;background:transparent;font-size:12px;color:#546674;padding:4px 0;max-width:112px}main{max-width:1600px;padding:0 32px 28px;margin:auto}.laboratory{display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:20px;align-items:stretch}.simulation-panel{border:1px solid var(--line);border-radius:0;overflow:hidden;background:#fff;min-width:0;box-shadow:0 5px 24px #164b7304}.stage-header{height:51px;display:flex;align-items:center;justify-content:space-between;padding:0 21px;border-bottom:1px solid #e6ebe4}.stage-title{display:flex;align-items:center;gap:9px;font-size:11px;color:#546674}.live-dot{width:6px;height:6px;background:#607d93;border-radius:0;box-shadow:0 0 0 3px #edf4ed;transition:background .25s}.live-dot.paused{background:#91aabd;box-shadow:0 0 0 3px #f3f7fb}.header-divider{height:11px;width:1px;background:#dfe6dc;margin:0 3px}#modeName{font-size:10px;color:#687267}.view-label{font-size:10px;color:#546674;padding:5px 9px;border-radius:0;background:#f2f5f0;white-space:nowrap}.canvas-wrap{position:relative;isolation:isolate;height:clamp(460px,57vh,700px);min-height:440px;background:#f0f3ee;overflow:hidden;touch-action:pan-y}#scene{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:inherit;cursor:default}.canvas-wrap.editing{touch-action:none}.canvas-wrap.editing #scene{cursor:crosshair}.canvas-wrap.dragging #scene{cursor:grabbing}.visual-switch{position:absolute;left:22px;top:21px;display:flex;padding:3px;border:1px solid #dbe4d9;background:#ffffffc9;border-radius:0;z-index:5;box-shadow:0 2px 5px #164b7307;backdrop-filter:blur(10px)}.visual-switch button{font-size:10px;padding:5px 10px;border-radius:0;color:#546674}.visual-switch button.active{background:#e6f0f8;color:#546674}.stage-time{position:absolute;right:23px;top:20px;text-align:right;pointer-events:none;z-index:5}.stage-time span{font-size:10px;color:#6a7166;display:block}.stage-time strong{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:17px;font-weight:400;letter-spacing:-.4px;color:#546674}.stage-legend{position:absolute;bottom:22px;left:23px;display:flex;align-items:center;gap:6px;font-size:10px;color:#546674;pointer-events:none;z-index:5}.legend-dot{width:5px;height:5px;border-radius:0;margin-left:8px}.legend-dot:first-child{margin-left:0}.legend-dot.teal{background:#477f85}.legend-dot.orange{background:#cb9864}.heat-legend{position:absolute;bottom:22px;left:23px;display:flex;align-items:center;gap:7px;font-size:10px;color:#65715e;z-index:5}.heat-legend div{width:65px;height:4px;border-radius:0;background:linear-gradient(90deg,#7cb6a7,#ddc67a,#b76c57)}.scale-bar{position:absolute;bottom:21px;right:23px;display:flex;gap:6px;align-items:center;font-size:10px;color:#546674;pointer-events:none;z-index:5}.scale-bar span{height:5px;width:50px;border:1px solid #b8cedf;border-top:0}.transport{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;border-top:1px solid #e6f0f8;background:#fff;gap:15px}.transport-primary{display:flex;align-items:center;gap:12px}.play-button{display:flex;align-items:center;justify-content:center;gap:9px;min-width:89px;background:#164b73;color:#f7fbf5;border-radius:0;padding:9px 14px;font-size:11px;box-shadow:0 2px 5px #164b730a}.play-button:hover{background:#546674}.play-button svg{width:13px;height:13px;stroke-width:3}.icon-button{padding:8px;border-radius:0;display:grid;place-items:center;color:#546674}.icon-button:hover{background:#edf3e9}.speed-control{display:flex;background:#f4f6f1;padding:3px;gap:1px;border-radius:0}.speed-control button{font-size:10px;color:#546674;padding:4px;min-width:29px;border-radius:0}.speed-control button.active{background:#fff;box-shadow:0 1px 3px #164b730c;color:#546674}.edit-button{display:flex;align-items:center;gap:7px;padding:8px 10px;font-size:11px;color:#546674;border-radius:0}.edit-button svg{width:15px;height:15px}.edit-button:hover,.edit-button.active{background:#ebf2e7;color:#546674}
+.flow-panel{display:grid;grid-template-columns:190px minmax(0,1fr);padding:22px 25px 13px;gap:28px;border-top:1px solid #edf0e8}.primary-metric{border-right:1px solid #e7ece3;padding-right:20px}.primary-metric>span{font-size:11px;color:#546674}.primary-metric>div{display:flex;align-items:baseline;gap:8px;margin:3px 0}.primary-metric strong{font-weight:400;letter-spacing:-1.9px;font-size:46px;line-height:1.1;color:#164b73;font-variant-numeric:tabular-nums}.primary-metric small{font-size:10px;color:#546674}.primary-metric p{font-size:10px;color:#546674;margin-top:7px}.chart-area{min-width:0}.chart-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;color:#546674}.chart-caption .text-button{font-size:10px;padding:0}#chart{display:block;width:100%;height:78px;margin-top:8px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:14px 25px 22px;gap:16px}.metric>span{display:block;font-size:11px;color:#546674;margin-bottom:5px}.metric strong{font-size:20px;font-weight:450;letter-spacing:-.45px;font-variant-numeric:tabular-nums;color:#546674}.metric small{font-size:10px;margin-left:4px;color:#546674;white-space:nowrap}.completion-line{display:flex;align-items:center;gap:9px;border-top:1px solid #e6f0f8;padding:10px 24px;font-size:11px;color:#546674;background:#f6f9f1}.completion-line .text-button{margin-left:auto}.complete-symbol{font-size:13px;color:#546674}
+.controls-panel{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:0;padding:23px 20px 19px;box-shadow:0 5px 24px #164b7304}.mode-switch{display:flex;padding:4px;background:#f0f4ec;border-radius:0;gap:2px}.mode-switch button{flex:1;padding:8px 3px;border-radius:0;color:#546674;font-size:10px;white-space:nowrap}.mode-switch button.active{background:#fff;color:#546674;box-shadow:0 1px 5px #164b7315}.mode-hint{font-size:11px;color:#546674;line-height:1.6;margin-top:10px;min-height:29px}.control-section{margin-top:21px}.crowd-section{margin-top:5px}.slider-control{display:block;margin:21px 0 0}.slider-label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#546674;margin-bottom:11px}.slider-label .control-output{font-size:12px;white-space:nowrap;color:#546674;font-variant-numeric:tabular-nums}.slider-label small{font-size:10px;color:#546674;margin-left:2px}.slider-control input{--track-fill:#607d93;--track-empty:#e6f0f8;appearance:none;-webkit-appearance:none;width:100%;height:26px;display:block;cursor:pointer;border:0;border-radius:0;background:transparent;margin:0}.slider-control input::-webkit-slider-runnable-track{height:3px;border-radius:0;background:linear-gradient(to right,var(--track-fill) 0%,var(--track-fill) var(--fill,50%),var(--track-empty) var(--fill,50%),var(--track-empty) 100%)}.slider-control input::-moz-range-track{height:3px;border-radius:0;background:linear-gradient(to right,var(--track-fill) 0%,var(--track-fill) var(--fill,50%),var(--track-empty) var(--fill,50%),var(--track-empty) 100%)}.slider-control input::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:14px;height:14px;margin-top:-5.5px;border:2px solid #607d93;background:#fff;border-radius:0;box-shadow:0 1px 3px #164b7311;transition:box-shadow .2s var(--ease)}.slider-control input:hover::-webkit-slider-thumb{box-shadow:0 0 0 4px #91aabd17}.slider-control input::-moz-range-thumb{width:10px;height:10px;border:2px solid #607d93;background:#fff;border-radius:0}.geometry-section{padding-top:21px;border-top:1px solid #e6f0f8}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-heading h2{font-size:11px;font-weight:550;color:#546674}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}.preset-grid button{font-size:10px;padding:9px 5px;background:#fcfdf9;border:1px solid #e6f0f8;border-radius:0;color:#546674}.preset-grid button:hover{background:#f5f8ee;border-color:#d8e2eb}.preset-grid button.active{border-color:#91aabd;background:#e6f0f8;color:#546674}.selected-section{border-top:1px solid #e6f0f8;padding-top:20px}.selection-marker{width:6px;height:6px;background:#91aabd;border-radius:0}.selected-section .slider-label{color:#546674}.selected-section input{--fill:50%;--track-fill:#91aabd;--track-empty:#e6f0f8}.selected-section input::-webkit-slider-thumb{border-color:#91aabd}.selected-section input::-moz-range-thumb{border-color:#91aabd}.panel-bottom{margin-top:auto;padding-top:25px}.live-note{display:flex;align-items:center;gap:7px;font-size:10px;color:#546674;margin:0 0 14px}.live-note>span:first-child{width:4px;height:4px;border-radius:0;background:#91aabd}.file-actions{display:flex;gap:7px}.outline-button{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid #e6f0f8;border-radius:0;background:#fff;font-size:10px;padding:9px 7px;flex:1;color:#546674;white-space:nowrap}.outline-button svg{width:13px;height:13px}.outline-button:hover{background:#f5f8ee;border-color:#b8cedf}
+.edit-toolbar{position:absolute;top:72px;left:50%;transform:translateX(-50%);display:flex;gap:3px;padding:4px;background:#fffffff0;border:1px solid #e6f0f8;border-radius:0;box-shadow:0 5px 22px #164b730c;z-index:6;white-space:nowrap;animation:panel-enter .28s var(--ease)}.edit-toolbar button{padding:7px 10px;font-size:10px;border-radius:0;color:#546674}.edit-toolbar button.active{background:#e6f0f8;color:#546674}.edit-hint{position:absolute;bottom:49px;left:50%;transform:translateX(-50%);background:#ffffffdc;border:1px solid #e6f0f8;border-radius:0;padding:6px 11px;z-index:6;font-size:10px;color:#546674;text-align:center;max-width:90%;pointer-events:none;backdrop-filter:blur(8px)}
+dialog{width:min(590px,calc(100vw - 36px));max-height:82vh;overflow:auto;border:1px solid #e6f0f8;border-radius:0;background:#fbfcf8;color:var(--ink);padding:26px;box-shadow:0 24px 90px #164b7326}dialog[open]{animation:dialog-enter .3s var(--ease)}dialog::backdrop{background:#152e4852;backdrop-filter:blur(5px)}.dialog-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:17px}.dialog-header h2{font-size:22px;font-weight:500;letter-spacing:-.5px}.dialog-header .icon-button{padding:6px}#dialogContent{font-size:13px;line-height:1.8;color:#546674}#dialogContent h3{font-size:13px;font-weight:550;color:#546674;margin:18px 0 7px}#dialogContent p{margin-bottom:12px}#dialogContent ul,#dialogContent ol{padding-left:19px}#dialogContent li{padding:0 0 8px 3px}#dialogContent a{color:#546674}.reference-list{font-size:10px;word-break:break-word}.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.method-grid>div{background:#f3f7fb;padding:12px;border-radius:0}.method-grid strong{display:block;font-size:10px}.method-grid span{font-size:10px}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);background:#164b73;color:#f9fcf2;border-radius:0;padding:10px 17px;font-size:11px;max-width:calc(100vw - 30px);box-shadow:0 8px 30px #164b731c;z-index:20;opacity:0;pointer-events:none;transition:transform .3s var(--ease),opacity .3s var(--ease)}.toast.show{transform:translate(-50%,0);opacity:1}.noscript{position:fixed;inset:20px;background:#f3f7fb;padding:30px;z-index:100}@keyframes panel-enter{from{opacity:0;transform:translate(-50%,-5px)}to{opacity:1;transform:translate(-50%,0)}}@keyframes dialog-enter{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(min-width:1500px){.laboratory{grid-template-columns:minmax(0,1fr) 316px}.controls-panel{padding:25px}.canvas-wrap{height:clamp(510px,62vh,740px)}.slider-label{font-size:12px}.mode-switch button{font-size:11px}.preset-grid button{font-size:11px}}
+@media(max-width:1100px){.site-header{padding:0 23px;height:72px}main{padding:0 23px 23px}.laboratory{grid-template-columns:minmax(0,1fr) 262px;gap:15px}.controls-panel{padding:20px 17px}.canvas-wrap{height:520px}.flow-panel{grid-template-columns:150px minmax(0,1fr);gap:20px;padding:20px 20px 12px}.primary-metric strong{font-size:41px}.primary-metric small{font-size:10px}.primary-metric p{font-size:10px}.metrics{padding:13px 20px 20px;gap:10px}.metric>span{font-size:10px}.metric small{font-size:10px}.stage-header{padding:0 17px}.mode-switch button{font-size:10px}.slider-label{font-size:11px}.header-actions{gap:20px}.edit-toolbar button{font-size:10px;padding:7px 8px}}
+@media(max-width:850px){.laboratory{grid-template-columns:minmax(0,1fr) 240px;gap:13px}.site-header{padding:0 18px}main{padding:0 18px 20px}.controls-panel{padding:18px 14px}.canvas-wrap{height:500px;min-height:440px}.stage-title{font-size:10px;gap:6px}#modeName{font-size:10px}.visual-switch{left:15px;top:18px}.visual-switch button{padding:5px 7px;font-size:10px}.stage-time{right:15px;top:18px}.stage-time span{font-size:10px}.stage-time strong{font-size:15px}.transport{padding:11px 13px}.transport-primary{gap:7px}.play-button{font-size:10px;min-width:73px;padding:8px 10px}.edit-button{font-size:10px;gap:5px}.flow-panel{grid-template-columns:119px minmax(0,1fr);padding:19px 16px 10px;gap:17px}.primary-metric strong{font-size:38px}.primary-metric>span{font-size:10px}.primary-metric small{font-size:10px}.primary-metric>div{gap:5px}.metrics{padding:14px 16px 19px;gap:7px}.metric>span{font-size:10px}.metric strong{font-size:18px}.metric small{font-size:10px}.chart-caption{font-size:10px}.chart-caption .text-button{font-size:10px}.stage-legend{left:16px;font-size:10px}.scale-bar{right:16px;font-size:10px}.heat-legend{left:16px;font-size:10px}.preset-grid button{font-size:10px}.mode-hint{font-size:11px}.mode-switch button{font-size:10px}.slider-label .control-output{font-size:11px}.slider-label{font-size:11px}.edit-toolbar button{font-size:10px;padding:7px 6px}.brand h1{font-size:15px}}
+@media(max-width:720px){.site-header{height:71px;padding:0 16px;gap:10px}.brand{gap:9px}.brand-mark{width:33px;height:33px;border-radius:0}.brand-mark svg{width:28px;height:28px}.brand h1{font-size:13px;letter-spacing:-.35px}.header-actions{gap:12px}.header-actions .text-button{font-size:10px}.language-wrap{gap:4px}.language-wrap svg{display:none}.language-wrap select{font-size:10px;max-width:86px}main{padding:0 13px 20px}.laboratory{display:flex;flex-direction:column;gap:14px}.simulation-panel,.controls-panel{border-radius:0}.stage-header{height:47px;padding:0 14px}.stage-title{font-size:10px}#modeName{font-size:10px}.canvas-wrap{height:365px;min-height:365px}.visual-switch{left:14px;top:16px}.stage-time{right:14px;top:15px}.stage-time strong{font-size:15px}.transport{padding:11px 13px}.transport-primary{gap:9px}.edit-button{font-size:10px}.flow-panel{grid-template-columns:123px minmax(0,1fr);padding:19px 16px 11px;gap:18px}.primary-metric strong{font-size:40px}.primary-metric>span{font-size:11px}.primary-metric p{font-size:10px;line-height:1.5}.primary-metric small{font-size:10px}.metrics{padding:12px 16px 19px;gap:9px}.metric>span{font-size:10px}.metric strong{font-size:19px}.metric small{font-size:10px}.chart-caption{font-size:10px}#chart{height:76px}.controls-panel{padding:19px;display:grid;grid-template-columns:1fr 1fr;gap:0 23px}.mode-switch{grid-column:1/-1}.mode-switch button{font-size:11px;padding:9px}.mode-hint{grid-column:1/-1;min-height:0;font-size:10px;margin-top:10px}.control-section{margin-top:14px}.crowd-section{grid-column:1}.geometry-section{grid-column:2;grid-row:3/5;padding-top:0;border:0}.section-heading h2{font-size:10px}.preset-grid{margin-top:10px;gap:5px}.preset-grid button{font-size:10px;padding:8px 3px}.slider-label{font-size:11px;gap:5px}.slider-label .control-output{font-size:11px}.slider-label small{font-size:10px}.slider-control{margin-top:21px}.selected-section{grid-column:1;margin-top:16px;padding-top:15px}.panel-bottom{grid-column:1/-1;padding-top:21px}.live-note{font-size:10px}.file-actions{gap:10px}.outline-button{font-size:11px;padding:10px}.edit-toolbar{top:62px;max-width:97%}.edit-toolbar button{font-size:10px;padding:7px 6px}.edit-hint{font-size:10px;bottom:46px}.stage-legend,.heat-legend{bottom:20px;font-size:10px}.scale-bar{bottom:19px;right:14px;font-size:10px}.legend-dot{margin-left:5px}.completion-line{padding:9px 16px;font-size:10px}.completion-line .text-button{font-size:10px}dialog{padding:22px}.dialog-header h2{font-size:20px}#dialogContent{font-size:13px}}
+@media(max-width:390px){.brand h1{font-size:12px}.brand-mark{width:30px;height:30px}.header-actions{gap:8px}.header-actions .text-button{font-size:10px}.language-wrap select{font-size:10px;max-width:76px}.site-header{padding:0 13px}main{padding:0 10px 18px}.stage-title{font-size:10px}#modeName{font-size:10px}.stage-header{padding:0 12px}.canvas-wrap{height:340px;min-height:340px}.transport-primary{gap:6px}.play-button{min-width:68px;font-size:10px}.edit-button{font-size:10px;padding:7px 5px}.flow-panel{grid-template-columns:110px minmax(0,1fr);gap:14px}.primary-metric strong{font-size:37px}.primary-metric p{font-size:10px}.primary-metric small{font-size:10px}.metric>span{font-size:10px}.metric strong{font-size:17px}.metric small{font-size:10px}.controls-panel{padding:17px;column-gap:18px}.edit-toolbar button{font-size:10px;padding:7px 5px}.chart-caption{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}#scene:focus-visible{outline:2px solid #91aabd;outline-offset:-3px}
+@media(max-width:390px){.transport{flex-wrap:wrap;row-gap:9px}.transport-primary{flex-shrink:0}.edit-button{flex-shrink:0;margin-left:auto;white-space:nowrap}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:14px}.metric{min-width:0}}
+</style>
+
+<!-- Blue-Gray theme: presentation-only; original scripts and project content retained. -->
+<style id="blue-gray-theme">
+:root {
+  --navy:#152e48;
+  --heading:#164b73;
+  --blue:#07558c;
+  --link:#0066b9;
+  --accent:#07558c;
+  --pale:#e6f0f8;
+  --wash:#f3f7fb;
+  --page:#edf2f7;
+  --white:#fff;
+  --ink:#172b3a;
+  --muted:#546674;
+  --line:#d8e2eb;
+  --soft:#e8eef3;
+  --max-width:1200px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","PingFang TC","Microsoft YaHei","Noto Sans CJK SC","Noto Sans CJK TC",Arial,sans-serif;
+  --target-size:44px;
+  --gutter:16px
+}
+*,*::before,*::after{box-sizing:border-box;
+  border-radius:0}
+
+:root{--accent-light:#3e97df;--paper:#edf2f7;--surface:#fff;--panel:#fff;--bg:#edf2f7;--deep:#07558c;--accent-soft:#e6f0f8;--teal:#164b73;--radius:0;color-scheme:light}
+html,body{font-family:var(--font);color:var(--ink)}
+h1,h2,h3,h4{color:var(--navy);font-weight:700}button,input,select,textarea,summary{font-family:inherit}
+button,select,summary,input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]){min-height:44px}
+button{min-width:44px}button,input,select,textarea,summary{border-radius:0!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--link);outline-offset:3px}
+input[type=range],input[type=checkbox]{accent-color:var(--blue)}
+button.primary,.btn.primary{background:var(--blue);border-color:var(--blue);color:white}button.primary:hover,.btn.primary:hover{background:var(--heading)}
+button.danger,.btn.danger{color:var(--heading);text-decoration:underline;text-underline-offset:3px}
+dialog{background:var(--white);border:1px solid var(--line);box-shadow:0 16px 48px #152e4826}dialog::backdrop{background:#152e4866}
+
+:root{font-size:14px;line-height:1.65;font-family:var(--font)}body{border-top:4px solid var(--blue)}.site-header,main{max-width:1440px}.site-header{height:auto;min-height:88px;padding-block:16px}.brand h1{font-size:22px;font-weight:700;letter-spacing:0}.brand-mark{background:var(--blue);box-shadow:none}.brand-mark svg{stroke:white}.text-button,.language-wrap select{font-size:13px;color:var(--heading)}.header-actions{gap:20px}
+.simulation-panel,.controls-panel{box-shadow:none;background:var(--white)}.controls-panel{padding:24px}.stage-header{height:auto;min-height:56px;background:var(--wash);gap:12px}.stage-title{font-size:13px;color:var(--heading)}#modeName,.view-label{font-size:12px}.view-label{background:var(--pale);color:var(--heading)}.live-dot{background:var(--blue);box-shadow:none}.live-dot.paused{background:var(--muted);box-shadow:none}
+.play-button{background:var(--blue);font-size:13px;box-shadow:none}.play-button:hover{background:var(--heading)}.icon-button,.edit-button{color:var(--heading)}.edit-button{font-size:13px}.speed-control,.mode-switch{background:var(--wash);border:1px solid var(--line);box-shadow:none}.speed-control button,.mode-switch button{font-size:12px}.speed-control button.active,.mode-switch button.active,.visual-switch button.active,.edit-toolbar button.active{background:var(--blue);color:white;box-shadow:none;font-weight:600}.visual-switch button{font-size:12px}.visual-switch{box-shadow:none;background:#ffffffed;border-color:var(--line)}.transport{flex-wrap:wrap}.transport-primary{flex-wrap:wrap;gap:8px}.mode-hint{font-size:13px}.slider-label,.slider-label .control-output{font-size:14px;color:var(--heading)}.slider-label small{font-size:12px}.slider-control input{--track-fill:var(--blue);--track-empty:var(--line);height:36px}.slider-control input::-webkit-slider-thumb{border-color:var(--blue);border-radius:0}.slider-control input::-moz-range-thumb{border-color:var(--blue);border-radius:0}
+.section-heading h2{font-size:14px;font-weight:700}.preset-grid button{font-size:12px}.preset-grid button.active{background:var(--pale);color:var(--blue);border-color:var(--blue);font-weight:600}.outline-button{font-size:12px;color:var(--heading);border-color:#91aabd}.live-note{font-size:12px}.primary-metric>span,.primary-metric p,.primary-metric small,.chart-caption,.chart-caption .text-button{font-size:12px}.primary-metric strong{color:var(--navy);font-weight:600}.metric>span{font-size:12px}.metric strong{font-weight:600;color:var(--heading)}.metric small{font-size:11px}.edit-toolbar{max-width:95%;white-space:normal;flex-wrap:wrap;justify-content:center;box-shadow:none}.edit-toolbar button{font-size:12px}.edit-hint{font-size:12px}.stage-time span{font-size:11px}.stage-time strong{color:var(--navy)}#dialogContent{font-size:15px;color:var(--muted)}#dialogContent h3{font-size:16px;color:var(--heading);font-weight:700}.dialog-header h2{font-weight:700}.toast{background:var(--navy);box-shadow:none}.method-grid>div{background:var(--wash)}
+@media(min-width:1101px){.laboratory{grid-template-columns:minmax(0,1fr) 320px;gap:24px}}
+@media(max-width:1100px){.controls-panel{padding:20px}.mode-switch{flex-wrap:wrap}.mode-switch button{min-width:60px}.stage-header{flex-wrap:wrap;padding-block:12px}}
+@media(max-width:850px){.laboratory{grid-template-columns:minmax(0,1fr)}.controls-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}.mode-switch,.mode-hint,.panel-bottom{grid-column:1/-1}.geometry-section{grid-column:2;grid-row:3/5;border-top:0;padding-top:0}.crowd-section,.selected-section{grid-column:1}.selected-section{grid-row:auto}.brand h1{font-size:20px}}
+@media(max-width:600px){.site-header{flex-wrap:wrap;padding:16px;gap:12px}.header-actions{width:100%;justify-content:space-between}.brand h1{font-size:20px}main{padding:0 16px 24px}.stage-title{flex-wrap:wrap}.controls-panel{display:flex;padding:20px;gap:0}.mode-switch{flex-wrap:nowrap}.geometry-section{border-top:1px solid var(--line);padding-top:20px}.stage-time{top:78px}.visual-switch{top:16px;left:12px}.flow-panel{grid-template-columns:minmax(0,1fr);gap:16px}.primary-metric{border-right:0;border-bottom:1px solid var(--line);padding-bottom:16px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.transport{gap:12px}.transport-primary{gap:6px}.edit-button{margin-left:0}.edit-toolbar{top:130px}.edit-hint{bottom:65px}.stage-legend,.heat-legend{max-width:70%;flex-wrap:wrap}.completion-line{flex-wrap:wrap}.file-actions{flex-wrap:wrap}}
+
+/* Keep component corners consistent even when legacy selectors are more specific. */
+*,*::before,*::after{border-radius:0!important}
+.speed-control button,.visual-switch button{min-width:44px}.slider-control input{min-height:44px}
+
+</style>
+<style id="strict-square-fix">
+/* Strict square presentation, including generated results and SVG rectangles. */
+*,*::before,*::after{border-radius:0!important}
+svg rect{rx:0!important;ry:0!important}
+input::-webkit-slider-thumb,input::-webkit-slider-runnable-track,input::-webkit-color-swatch,input::-webkit-color-swatch-wrapper{border-radius:0!important}
+input::-moz-range-thumb,input::-moz-range-track,input::-moz-color-swatch{border-radius:0!important}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="#workspace"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M8 29V11h9m15 0v18h-9"/><path d="M15 20h11m-4-4 4 4-4 4"/></svg></span><h1 data-i18n="brand">Crowd Flow Laboratory</h1></a>
+  <div class="header-actions"><button class="text-button" id="methodButton" data-i18n="methods">Model &amp; methods</button><label class="language-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg><select id="language" aria-label="Language"><option value="en">English</option><option value="zh-CN">简体中文</option><option value="zh-TW">繁體中文</option></select></label></div>
+</header>
+<main id="workspace">
+<div class="laboratory">
+<section class="simulation-panel" aria-label="Crowd simulation">
+  <div class="stage-header"><div class="stage-title"><span class="live-dot" id="liveDot"></span><span id="runStatus">Running</span><span class="header-divider"></span><span id="modeName">Continuous flow</span></div><span class="view-label" data-i18n="topView">2D top view</span></div>
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="scene" tabindex="0" aria-describedby="keyboardEditingHelp" role="img" aria-label="Crowd moving around obstacles towards the exit"></canvas>
+    <div class="visual-switch" role="group" aria-label="Display mode"><button class="active" data-mode="people" aria-pressed="true" data-i18n="peopleView">People</button><button data-mode="density" aria-pressed="false" data-i18n="densityView">Density</button><button data-mode="paths" aria-pressed="false" data-i18n="pathsView">Paths</button></div>
+    <div class="stage-time"><span data-i18n="simulationTime">Simulation time</span><strong id="timeValue">00:00.0</strong></div>
+    <div class="edit-toolbar" id="editToolbar" hidden><button data-tool="select" class="active" aria-pressed="true" data-i18n="selectTool">Move</button><button data-tool="wall" aria-pressed="false" data-i18n="wallTool">Wall</button><button data-tool="circle" aria-pressed="false" data-i18n="columnTool">Column</button><button data-tool="source" aria-pressed="false" data-i18n="sourceTool">Crowd position</button><button id="deleteObject" data-i18n="deleteTool" disabled>Delete</button></div>
+    <div class="edit-hint" id="editHint" hidden></div>
+    <p id="keyboardEditingHelp" class="sr-only" data-i18n="keyboardEditingHelp"></p>
+    <div class="stage-legend" id="stageLegend"><span class="legend-dot teal"></span><span data-i18n="peopleLegend">Lower crowding</span><span class="legend-dot orange"></span><span data-i18n="slowLegend">Higher crowding</span></div>
+    <div class="heat-legend" id="heatLegend" hidden><span data-i18n="lowerDensity">Lower density</span><div></div><span data-i18n="higherDensity">Higher density</span></div>
+    <div class="scale-bar"><span></span>5 m</div>
+  </div>
+  <div class="transport"><div class="transport-primary"><button class="play-button" id="playButton" aria-label="Pause"><svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg><span id="playLabel" data-i18n="pause">Pause</span></button><button class="icon-button" id="resetButton" data-i18n-title="restartFlow" aria-label="Restart"><svg viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 2 8M4 4v6h6"/></svg></button><div class="speed-control" role="group" aria-label="Playback speed"><button class="active" data-speed="1" aria-pressed="true">1×</button><button data-speed="2" aria-pressed="false">2×</button><button data-speed="4" aria-pressed="false">4×</button></div></div><button class="edit-button" id="editButton" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="m4 16 12-12 4 4L8 20H4v-4Zm10-10 4 4"/></svg><span data-i18n="editLayout">Edit layout</span></button></div>
+  <div class="flow-panel"><div class="primary-metric"><span data-i18n="throughput">Throughput</span><div><strong id="flowValue">0</strong><small data-i18n="personsPerSecond">people/s</small></div><p data-i18n="lastSecond">Crossings in the last 1 s</p></div><div class="chart-area"><div class="chart-caption"><span data-i18n="flowChart">Throughput over time</span><button id="exportCsv" class="text-button small" data-i18n="exportData">Export CSV</button></div><canvas id="chart" role="img" aria-label="Throughput in each rolling one-second window"></canvas></div></div>
+  <div class="metrics"><div class="metric"><span data-i18n="peopleInside">Inside the room</span><strong id="insideValue">240</strong></div><div class="metric"><span id="passedLabel" data-i18n="totalCrossings">Total crossings</span><strong id="exitedValue">0</strong><small id="batchTotal" hidden>/ 240</small></div><div class="metric"><span data-i18n="meanSpeed">Mean speed</span><strong id="meanSpeedValue">0.00</strong><small>m/s</small></div><div class="metric"><span data-i18n="exitDensity">Exit-zone density</span><strong id="densityValue">0.00</strong><small data-i18n="personsPerArea">people/m²</small></div></div>
+  <div class="completion-line" id="completeMessage" hidden><span class="complete-symbol" aria-hidden="true">✓</span><span id="completionText"></span><button id="repeatRun" class="text-button" data-i18n="runAgain">Run again</button></div>
+</section>
+<aside class="controls-panel">
+  <div class="mode-switch" role="group" aria-label="Simulation mode"><button class="active" data-sim-mode="continuous" aria-pressed="true" data-i18n="modeContinuous">Continuous flow</button><button data-sim-mode="finite" aria-pressed="false" data-i18n="modeFinite">Fixed population</button></div>
+  <p class="mode-hint" id="modeHint"></p>
+  <section class="control-section crowd-section">
+    <label class="slider-control" for="population"><span class="slider-label"><span id="populationLabel" data-i18n="activePopulation">Active population</span><span class="control-output" id="populationOutput">240</span></span><input aria-labelledby="populationLabel" id="population" type="range" min="0" max="680" step="1" value="240"></label>
+    <label class="slider-control" for="desiredSpeed"><span class="slider-label"><span data-i18n="desiredSpeed" id="desiredSpeedLabel">Desired speed</span><span class="control-output" id="desiredSpeedOutput">1.35 <small>m/s</small></span></span><input aria-labelledby="desiredSpeedLabel" id="desiredSpeed" type="range" min="0.6" max="3" step="0.01" value="1.35"></label>
+  </section>
+  <section class="control-section geometry-section"><div class="section-heading"><h2 data-i18n="startingLayout">Layout</h2><button class="text-button small" id="restoreButton" data-i18n="restore">Restore</button></div><div class="preset-grid"><button data-preset="open" data-i18n="presetOpen">Open room</button><button class="active" data-preset="guided" data-i18n="presetGuided">Guide walls</button><button data-preset="column" data-i18n="presetColumn">Central column</button><button data-preset="narrow" data-i18n="presetNarrow">Narrow exit</button></div>
+    <label class="slider-control" for="doorWidth"><span class="slider-label"><span data-i18n="doorWidth" id="doorWidthLabel">Exit width</span><span class="control-output" id="doorWidthOutput">3.2 <small>m</small></span></span><input aria-labelledby="doorWidthLabel" id="doorWidth" type="range" min="1.2" max="7" step="0.01" value="3.2"></label>
+    <div id="guideControls"><label class="slider-control" for="guideAngle"><span class="slider-label"><span data-i18n="guideAngle" id="guideAngleLabel">Guide-wall angle</span><span class="control-output" id="guideAngleOutput">35<small>°</small></span></span><input aria-labelledby="guideAngleLabel" id="guideAngle" type="range" min="0" max="65" step="0.01" value="35"></label><label class="slider-control" for="guideLength"><span class="slider-label"><span data-i18n="guideLength" id="guideLengthLabel">Guide-wall length</span><span class="control-output" id="guideLengthOutput">6.5 <small>m</small></span></span><input aria-labelledby="guideLengthLabel" id="guideLength" type="range" min="2" max="9" step="0.01" value="6.5"></label><label class="slider-control" for="guideOffset"><span class="slider-label"><span data-i18n="guideOffset" id="guideOffsetLabel">Distance from exit</span><span class="control-output" id="guideOffsetOutput">2.5 <small>m</small></span></span><input aria-labelledby="guideOffsetLabel" id="guideOffset" type="range" min="1" max="6" step="0.01" value="2.5"></label></div>
+  </section>
+  <section class="control-section selected-section" id="selectionInfo" hidden><div class="section-heading"><h2 id="selectedTitle"></h2><span class="selection-marker" aria-hidden="true"></span></div><div id="wallProperties"><label class="slider-control" for="objectRotation"><span class="slider-label"><span data-i18n="rotation" id="objectRotationLabel">Rotation</span><span class="control-output" id="rotationValue">90°</span></span><input aria-labelledby="objectRotationLabel" type="range" id="objectRotation" min="0" max="180" step="0.01" value="90"></label><label class="slider-control" for="objectLength"><span class="slider-label"><span data-i18n="wallLength" id="objectLengthLabel">Length</span><span class="control-output" id="objectLengthOutput">5 m</span></span><input aria-labelledby="objectLengthLabel" id="objectLength" type="range" min="0" max="40" step="0.01" value="5"></label><label class="slider-control" for="objectWidth"><span class="slider-label"><span data-i18n="wallWidth" id="objectWidthLabel">Width</span><span class="control-output" id="objectWidthOutput">0.4 m</span></span><input aria-labelledby="objectWidthLabel" id="objectWidth" type="range" min="0.18" max="3" step="0.01" value="0.4"></label></div><div id="circleProperties"><label class="slider-control" for="objectRadius"><span class="slider-label"><span data-i18n="columnRadius" id="objectRadiusLabel">Radius</span><span class="control-output" id="objectRadiusOutput">0.9 m</span></span><input aria-labelledby="objectRadiusLabel" id="objectRadius" type="range" min="0.25" max="4" step="0.01" value="0.9"></label></div></section>
+  <div class="panel-bottom"><p class="live-note"><span aria-hidden="true"></span><span data-i18n="liveChanges">Changes apply immediately.</span></p><div class="file-actions"><button id="saveScene" class="outline-button"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span data-i18n="saveScene">Save scene</span></button><button id="loadScene" class="outline-button"><svg viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 16v5h16v-5"/></svg><span data-i18n="loadScene">Load scene</span></button><input id="sceneFile" type="file" accept=".json,application/json" hidden></div></div>
+</aside>
+</div>
+</main>
+<dialog id="infoDialog" aria-labelledby="dialogTitle"><div class="dialog-header"><h2 id="dialogTitle"></h2><button class="icon-button" id="closeDialog" aria-label="Close"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="dialogContent"></div></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<noscript><div class="noscript">Enable JavaScript to run the simulation. 请启用 JavaScript。請啟用 JavaScript。</div></noscript>
+<script>/* Crowd Flow Lab · deterministic educational pedestrian simulation.
+ * Units are meters and simulated seconds. No network or third-party runtime.
+ */
+(function (root) {
+  'use strict'
+
+  const DEFAULTS = {
+    population: 240, desiredSpeed: 1.35, doorWidth: 3.2,
+    guideAngle: 35, guideLength: 6.5, guideOffset: 2.5,
+    preset: 'guided', seed: 42, mode: 'continuous'
+  }
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
+  const finite = (v, fallback) => {
+    if (v === null || v === undefined || typeof v === 'boolean' || typeof v === 'symbol' || typeof v === 'object' || typeof v === 'function') return fallback
+    if (typeof v === 'string' && !v.trim()) return fallback
+    const number = Number(v)
+    return Number.isFinite(number) ? number : fallback
+  }
+  const hypot = Math.hypot
+  function randomSource(seed) {
+    let a = seed >>> 0
+    return function () {
+      a = (a + 0x6d2b79f5) >>> 0
+      let t = Math.imul(a ^ a >>> 15, 1 | a)
+      t ^= t + Math.imul(t ^ t >>> 7, 61 | t)
+      return ((t ^ t >>> 14) >>> 0) / 4294967296
+    }
+  }
+  function nearestOnSegment(x, y, w) {
+    const dx = w.bx - w.ax, dy = w.by - w.ay
+    const den = dx * dx + dy * dy
+    const t = den > 1e-12 ? clamp(((x - w.ax) * dx + (y - w.ay) * dy) / den, 0, 1) : 0
+    return { x: w.ax + t * dx, y: w.ay + t * dy }
+  }
+  function segmentDistanceSquared(ax, ay, bx, by, px, py) {
+    const dx = bx - ax, dy = by - ay
+    const den = dx * dx + dy * dy
+    const t = den > 1e-12 ? clamp(((px - ax) * dx + (py - ay) * dy) / den, 0, 1) : 0
+    const ex = ax + t * dx - px, ey = ay + t * dy - py
+    return ex * ex + ey * ey
+  }
+  function segmentsIntersect(ax, ay, bx, by, cx, cy, dx, dy) {
+    const cross = (px, py, qx, qy, rx, ry) => (qx - px) * (ry - py) - (qy - py) * (rx - px)
+    const a = cross(ax, ay, bx, by, cx, cy), b = cross(ax, ay, bx, by, dx, dy)
+    const c = cross(cx, cy, dx, dy, ax, ay), d = cross(cx, cy, dx, dy, bx, by)
+    return a * b < -1e-10 && c * d < -1e-10
+  }
+  function segmentSegmentDistanceSquared(ax, ay, bx, by, w) {
+    if (segmentsIntersect(ax, ay, bx, by, w.ax, w.ay, w.bx, w.by)) return 0
+    return Math.min(
+      segmentDistanceSquared(ax, ay, bx, by, w.ax, w.ay),
+      segmentDistanceSquared(ax, ay, bx, by, w.bx, w.by),
+      segmentDistanceSquared(w.ax, w.ay, w.bx, w.by, ax, ay),
+      segmentDistanceSquared(w.ax, w.ay, w.bx, w.by, bx, by)
+    )
+  }
+  class MinHeap {
+    constructor() { this.a = [] }
+    push(index, distance) {
+      const a = this.a, value = { index, distance }
+      let i = a.length
+      a.push(value)
+      while (i > 0) {
+        const p = (i - 1) >> 1
+        if (a[p].distance <= distance) break
+        a[i] = a[p]
+        i = p
+      }
+      a[i] = value
+    }
+    pop() {
+      const a = this.a, top = a[0], last = a.pop()
+      if (a.length) {
+        let i = 0
+        while (true) {
+          let c = i * 2 + 1
+          if (c >= a.length) break
+          if (c + 1 < a.length && a[c + 1].distance < a[c].distance) c++
+          if (a[c].distance >= last.distance) break
+          a[i] = a[c]
+          i = c
+        }
+        a[i] = last
+      }
+      return top
+    }
+  }
+
+  class CrowdEngine {
+    constructor(params = {}) {
+      this.params = { ...DEFAULTS }
+      this.bounds = { minX: -13, maxX: 13, minY: 0, maxY: 27, exitY: -8.5 }
+      this.obstacles = []
+      this.walls = []
+      this.geometryVersion = 0
+      this.membershipVersion = 0
+      this._cohortId = 0
+      this.reset(params)
+    }
+
+    _normalizeParams(params) {
+      const input = params && typeof params === 'object' && !Array.isArray(params) ? params : {}
+      const previous = { ...DEFAULTS, ...this.params }
+      const p = { ...previous }
+      if (['continuous', 'finite'].includes(input.mode)) p.mode = input.mode
+      if (['open', 'guided', 'column', 'narrow', 'custom'].includes(input.preset)) p.preset = input.preset
+      const ranges = {
+        population: [0, 1000], desiredSpeed: [0.1, 4], doorWidth: [0.8, 12],
+        guideAngle: [0, 80], guideLength: [0, 10], guideOffset: [0.7, 10], seed: [0, 0xffffffff]
+      }
+      for (const [key, range] of Object.entries(ranges)) {
+        p[key] = clamp(finite(input[key], previous[key]), range[0], range[1])
+      }
+      p.population = Math.round(p.population)
+      p.seed = Math.floor(p.seed)
+      for (const key of ['sourceX', 'sourceY']) {
+        if (!Object.prototype.hasOwnProperty.call(input, key)) continue
+        if (input[key] === undefined) p[key] = undefined
+        else {
+          const value = finite(input[key], NaN)
+          if (Number.isFinite(value)) p[key] = clamp(value, key === 'sourceX' ? -12.4 : 0.6, key === 'sourceX' ? 12.4 : 26.4)
+        }
+      }
+      return p
+    }
+
+    reset(params = {}) {
+      this.params = this._normalizeParams(params)
+      this.time = 0
+      this.exited = 0
+      this.totalCrossings = 0
+      this.history = []
+      this.exitTimes = []
+      this._nextSample = 1
+      this._trailClock = 0
+      this._rng = randomSource(this.params.seed)
+      this._nextId = 0
+      this._cohortId++
+      this.batchExited = 0
+      this._finiteTarget = this.params.mode === 'finite' ? this.params.population : 0
+      this.batchStartTime = this.params.mode === 'finite' ? 0 : null
+      this._batchCompletedAt = null
+      this._retiredPool = []
+      this._spawnCandidates = null
+      this._fineSpawnCandidates = null
+      this._nextSpawnRetry = 0
+      this.agents = []
+      this._hash = new Map()
+      this.membershipVersion++
+      this.obstacles = this._makePreset()
+      this._rebuildGeometry()
+      this._spawnAdditional(this.params.population, true)
+      this._invalidateSpawnCandidates()
+      this._syncCounts()
+      this.history.push(this._snapshot())
+      return this
+    }
+
+    _makePreset() {
+      const p = this.params
+      if (p.preset === 'custom' && this.obstacles) return this.obstacles.map(o => ({ ...o }))
+      if (p.preset === 'column') return [{ id: 'column', type: 'circle', x: 0, y: 4.6, r: 1.05, height: 1.2, kind: 'obstacle', editable: true }]
+      if (p.preset !== 'guided' || p.guideLength < 0.1) return []
+      const rad = p.guideAngle * Math.PI / 180
+      const start = p.doorWidth / 2 + 0.35
+      return [-1, 1].map((sign, i) => ({
+        id: 'guide-' + i, type: 'wall', ax: sign * start, ay: p.guideOffset,
+        bx: sign * Math.min(12.35, start + Math.sin(rad) * p.guideLength),
+        by: p.guideOffset + Math.cos(rad) * p.guideLength,
+        width: 0.32, height: 1.25, kind: 'guide', editable: true
+      }))
+    }
+
+    _rebuildGeometry() {
+      // A wall is a capsule: account for its 0.2 m end radius so the
+      // parameter measures the clear opening, not its endpoint spacing.
+      const half = this.params.doorWidth / 2 + 0.2
+      const wall = (id, ax, ay, bx, by) => ({ id, type: 'wall', ax, ay, bx, by, width: 0.4, height: 1.5, kind: 'boundary', editable: false })
+      this.walls = [
+        wall('back-left', -13, 0, -half, 0), wall('back-right', half, 0, 13, 0),
+        wall('side-left', -13, 0, -13, 27), wall('side-right', 13, 0, 13, 27),
+        wall('front', -13, 27, 13, 27),
+        ...this.obstacles.filter(o => o.type === 'wall')
+      ]
+      this.circles = this.obstacles.filter(o => o.type === 'circle')
+      this._buildNavigation()
+      this.geometryVersion++
+      this._invalidateSpawnCandidates()
+    }
+
+    _clear(x, y, clearance = 0.28) {
+      for (const w of this.walls) {
+        const radius = w.width * 0.5 + clearance
+        if (segmentDistanceSquared(w.ax, w.ay, w.bx, w.by, x, y) < radius * radius) return false
+      }
+      for (const c of this.circles) {
+        const radius = c.r + clearance, dx = x - c.x, dy = y - c.y
+        if (dx * dx + dy * dy < radius * radius) return false
+      }
+      return true
+    }
+
+    _visible(ax, ay, bx, by, clearance = 0.28) {
+      for (const w of this.walls) {
+        const r = w.width / 2 + clearance
+        if (segmentSegmentDistanceSquared(ax, ay, bx, by, w) < r * r) return false
+      }
+      for (const c of this.circles) {
+        const r = c.r + clearance
+        if (segmentDistanceSquared(ax, ay, bx, by, c.x, c.y) < r * r) return false
+      }
+      return true
+    }
+
+    _buildNavigation() {
+      const cell = 0.45
+      const nx = Math.ceil(28 / cell) | 1, ny = Math.ceil(38 / cell), n = nx * ny
+      // Put a cell center on both doorway axes so a physically passable narrow
+      // exit cannot disappear solely because of an unlucky grid alignment.
+      const minX = -nx * cell / 2, minY = -Math.round(10 / cell) * cell - cell / 2
+      const blocked = new Uint8Array(n), distance = new Float32Array(n), parent = new Int32Array(n)
+      const tx = new Float32Array(n), ty = new Float32Array(n)
+      distance.fill(Infinity)
+      parent.fill(-1)
+      const position = i => ({ x: minX + (i % nx + 0.5) * cell, y: minY + ((i / nx | 0) + 0.5) * cell })
+      for (let i = 0; i < n; i++) {
+        const q = position(i)
+        blocked[i] = this._clear(q.x, q.y, 0.29) ? 0 : 1
+      }
+      const heap = new MinHeap()
+      for (let i = 0; i < n; i++) {
+        const q = position(i)
+        if (Math.abs(q.x) < 2.3 && q.y < -8.6 && !blocked[i]) {
+          distance[i] = 0
+          heap.push(i, 0)
+        }
+      }
+      const moves = [[-1, 0, 1], [1, 0, 1], [0, -1, 1], [0, 1, 1], [-1, -1, Math.SQRT2], [1, -1, Math.SQRT2], [-1, 1, Math.SQRT2], [1, 1, Math.SQRT2]]
+      while (heap.a.length) {
+        const current = heap.pop(), i = current.index
+        if (current.distance > distance[i] + 0.0001) continue
+        const ix = i % nx, iy = i / nx | 0
+        for (const [dx, dy, cost] of moves) {
+          const x = ix + dx, y = iy + dy
+          if (x < 0 || x >= nx || y < 0 || y >= ny) continue
+          const j = y * nx + x
+          if (blocked[j]) continue
+          if (dx && dy && (blocked[i + dx] || blocked[i + dy * nx])) continue
+          const nd = distance[i] + cost * cell
+          if (nd + 0.0001 < distance[j]) {
+            distance[j] = nd
+            parent[j] = i
+            heap.push(j, nd)
+          }
+        }
+      }
+      for (let i = 0; i < n; i++) {
+        const start = position(i)
+        let j = i
+        for (let look = 0; look < 9 && parent[j] >= 0; look++) {
+          const next = parent[j], q = position(next)
+          if (!this._visible(start.x, start.y, q.x, q.y, 0.26)) break
+          j = next
+        }
+        const end = position(j)
+        tx[i] = end.x
+        ty[i] = end.y
+      }
+      this.nav = { cell, minX, minY, nx, ny, blocked, distance, parent, tx, ty }
+    }
+
+    _navIndex(x, y) {
+      const n = this.nav
+      const ix = clamp(Math.floor((x - n.minX) / n.cell), 0, n.nx - 1)
+      const iy = clamp(Math.floor((y - n.minY) / n.cell), 0, n.ny - 1)
+      return iy * n.nx + ix
+    }
+
+    directionAt(x, y) {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return { x: 0, y: 0, dx: 0, dy: 0, reachable: false }
+      if (y < 0) {
+        const dx = clamp(-x * 0.22, -0.5, 0.5), dy = -1, len = hypot(dx, dy)
+        return { x: dx / len, y: dy / len, dx: dx / len, dy: dy / len, reachable: true }
+      }
+      // A continuous approach near the opening removes grid alignment artifacts.
+      const lane = Math.max(0, this.params.doorWidth / 2 - 0.30)
+      const approachX = clamp(x, -lane, lane)
+      if (y < 3 && Math.abs(x) < this.params.doorWidth / 2 + 1.5 && this._visible(x, y, approachX, -1.7, 0.26)) {
+        const dx = approachX - x, dy = -1.7 - y, len = hypot(dx, dy)
+        return { x: dx / len, y: dy / len, dx: dx / len, dy: dy / len, reachable: true }
+      }
+      const n = this.nav
+      let index = this._navIndex(x, y)
+      if (!Number.isFinite(n.distance[index])) {
+        const cx = index % n.nx, cy = index / n.nx | 0
+        let score = Infinity, found = -1
+        for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+          const ix = cx + dx, iy = cy + dy
+          if (ix < 0 || iy < 0 || ix >= n.nx || iy >= n.ny) continue
+          const j = iy * n.nx + ix
+          if (!Number.isFinite(n.distance[j])) continue
+          const qx = n.minX + (ix + 0.5) * n.cell, qy = n.minY + (iy + 0.5) * n.cell
+          const d = (qx - x) ** 2 + (qy - y) ** 2
+          if (d < score && this._visible(x, y, qx, qy, 0.225)) { score = d; found = j }
+        }
+        if (found < 0) return { x: 0, y: 0, dx: 0, dy: 0, reachable: false }
+        index = found
+      }
+      let px = n.tx[index], py = n.ty[index]
+      if (!this._visible(x, y, px, py, 0.225)) {
+        const p = n.parent[index]
+        if (p >= 0) { px = n.minX + (p % n.nx + 0.5) * n.cell; py = n.minY + ((p / n.nx | 0) + 0.5) * n.cell }
+      }
+      let dx = px - x, dy = py - y
+      const len = hypot(dx, dy)
+      if (len < 0.03) { dx = 0; dy = -1 }
+      else { dx /= len; dy /= len }
+      return { x: dx, y: dy, dx, dy, reachable: true }
+    }
+
+    _invalidateSpawnCandidates() {
+      this._spawnCandidates = null
+      this._fineSpawnCandidates = null
+      this._nextSpawnRetry = this.time || 0
+    }
+
+    _buildSpawnCandidates(initial, fine) {
+      const p = this.params, points = [], spacing = fine ? 0.2 : 0.62
+      const customSource = Number.isFinite(p.sourceX) && Number.isFinite(p.sourceY)
+      const clearance = fine ? 0.25 : 0.29
+      for (let y = fine ? 0.5 : 0.85; y < 26.5; y += spacing) {
+        for (let x = fine ? -12.5 : -12.2; x < 12.5; x += spacing) {
+          const jitter = fine ? 0.02 : 0.08
+          const px = x + (this._rng() - 0.5) * jitter
+          const py = y + (this._rng() - 0.5) * jitter
+          const sourceDistance = customSource ? hypot(px - p.sourceX, py - p.sourceY) : 0
+          if (!initial && (customSource ? sourceDistance > 8.5 : py < 18)) continue
+          if (!this._clear(px, py, clearance)) continue
+          let score
+          if (customSource) score = sourceDistance + this._rng() * 1.8
+          else if (initial) score = this._rng() + (py < 6 || py > 25 ? 2 : 0)
+          else score = this._rng() + Math.max(0, 23.5 - py) * 3
+          points.push({ x: px, y: py, score })
+        }
+      }
+      points.sort((a, b) => a.score - b.score)
+      return { points, cursor: 0, initial }
+    }
+
+    _activateAgent(point, previous) {
+      const a = previous || {
+        id: this._nextId++, generation: -1,
+        r: 0.225 + this._rng() * 0.018,
+        speedFactor: 0.88 + this._rng() * 0.24
+      }
+      a.generation++
+      Object.assign(a, {
+        x: point.x, y: point.y, vx: 0, vy: 0,
+        exited: false, active: true, finished: false, phase: 'inside',
+        heading: -Math.PI / 2, stress: 0, birthTime: this.time,
+        age: 0, outsideAge: 0, exitTime: null, retirementTime: null,
+        cohortId: this.params.mode === 'finite' ? this._cohortId : null,
+        trail: [{ x: point.x, y: point.y }],
+        _ox: point.x, _oy: point.y, _neighborCount: 0
+      })
+      this.agents.push(a)
+      this.membershipVersion++
+      return a
+    }
+
+    _spawnAdditional(count, initial = false) {
+      count = Math.max(0, Math.floor(count))
+      if (!count) return 0
+      const buckets = new Map(), cell = 0.55
+      const addToBuckets = a => {
+        const key = Math.floor(a.x / cell) + ',' + Math.floor(a.y / cell)
+        const bucket = buckets.get(key)
+        if (bucket) bucket.push(a)
+        else buckets.set(key, [a])
+      }
+      for (const a of this.agents) if (a.active) addToBuckets(a)
+      const available = q => {
+        const ix = Math.floor(q.x / cell), iy = Math.floor(q.y / cell)
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const bucket = buckets.get((ix + dx) + ',' + (iy + dy))
+          if (bucket) for (const a of bucket) {
+            const spacing = a.r + 0.243 + 0.02
+            if ((a.x - q.x) ** 2 + (a.y - q.y) ** 2 < spacing * spacing) return false
+          }
+        }
+        return true
+      }
+      let added = 0
+      for (let pass = 0; pass < 2 && added < count; pass++) {
+        const key = pass ? '_fineSpawnCandidates' : '_spawnCandidates'
+        if (!this[key] || this[key].initial !== initial) this[key] = this._buildSpawnCandidates(initial, !!pass)
+        const cache = this[key]
+        for (let tried = 0; tried < cache.points.length && added < count; tried++) {
+          const q = cache.points[cache.cursor]
+          cache.cursor = (cache.cursor + 1) % cache.points.length
+          if (!available(q)) continue
+          const a = this._activateAgent(q, this._retiredPool.pop())
+          addToBuckets(a)
+          added++
+        }
+      }
+      return added
+    }
+
+    _retireAgent(a) {
+      if (!a.active) return
+      a.active = false
+      a.finished = true
+      a.phase = 'retired'
+      a.retirementTime = this.time
+      a.vx = 0
+      a.vy = 0
+      this._retiredPool.push(a)
+      this.membershipVersion++
+    }
+
+    _compactAgents() {
+      let write = 0
+      for (let read = 0; read < this.agents.length; read++) {
+        const a = this.agents[read]
+        if (a.active) this.agents[write++] = a
+      }
+      this.agents.length = write
+    }
+
+    _syncCounts() {
+      let active = 0, inside = 0, remaining = 0
+      for (const a of this.agents) {
+        if (!a.active) continue
+        active++
+        if (!a.exited) {
+          inside++
+          if (a.cohortId === this._cohortId) remaining++
+        }
+      }
+      this.active = active
+      this.inside = inside
+      this.batchRemaining = this.params.mode === 'finite' ? remaining : 0
+      this.batchTotal = this.params.mode === 'finite' ? this.batchExited + remaining : 0
+      this.requestedTotal = this.params.mode === 'finite' ? this._finiteTarget : this.params.population
+      this.total = this.params.mode === 'finite' ? this.batchTotal : active
+      this.unplaced = Math.max(0, this.requestedTotal - this.total)
+      if (this.params.mode === 'finite' && this.batchTotal > 0 && remaining === 0 && this.unplaced === 0) {
+        if (this._batchCompletedAt === null) this._batchCompletedAt = this.time
+      } else this._batchCompletedAt = null
+    }
+
+    _reconcilePopulation(force = false) {
+      this._syncCounts()
+      const finiteMode = this.params.mode === 'finite'
+      const desiredRemaining = finiteMode ? Math.max(0, this._finiteTarget - this.batchExited) : this.params.population
+      const current = finiteMode ? this.batchRemaining : this.active
+      let excess = Math.max(0, current - desiredRemaining)
+      if (excess) {
+        const removable = this.agents.filter(a => a.active && !a.exited && (!finiteMode || a.cohortId === this._cohortId))
+        removable.sort((a, b) => b.y - a.y || b.id - a.id)
+        for (const a of removable) {
+          if (!excess) break
+          this._retireAgent(a)
+          excess--
+        }
+        this._compactAgents()
+        this._syncCounts()
+      }
+      const missing = finiteMode ? Math.max(0, desiredRemaining - this.batchRemaining) : Math.max(0, this.params.population - this.active)
+      if (missing && (force || this.time + 1e-8 >= this._nextSpawnRetry)) {
+        const added = this._spawnAdditional(missing)
+        this._nextSpawnRetry = this.time + (added === missing ? 0 : 0.35)
+        this._syncCounts()
+      }
+    }
+
+    _settleAfterGeometry() {
+      const cell = 0.6, occupied = new Map(), affected = []
+      const reserve = a => {
+        const key = Math.floor(a.x / cell) + ',' + Math.floor(a.y / cell)
+        const bucket = occupied.get(key)
+        if (bucket) bucket.push(a)
+        else occupied.set(key, [a])
+      }
+      const bodySpace = (a, x, y) => {
+        const ix = Math.floor(x / cell), iy = Math.floor(y / cell)
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const bucket = occupied.get((ix + dx) + ',' + (iy + dy))
+          if (bucket) for (const b of bucket) {
+            const spacing = a.r + b.r + 0.004
+            if ((x - b.x) ** 2 + (y - b.y) ** 2 < spacing * spacing) return false
+          }
+        }
+        return true
+      }
+      // Reserve unaffected people first. Only bodies intersected by the edited
+      // geometry may move, and their new positions must also have body space.
+      for (const a of this.agents) {
+        if (!a.active) continue
+        if (this._clear(a.x, a.y, a.r - 0.0001)) reserve(a)
+        else affected.push(a)
+      }
+      const directions = Array.from({ length: 40 }, (_, i) => ({ x: Math.cos(i * Math.PI / 20), y: Math.sin(i * Math.PI / 20) }))
+      for (const a of affected) {
+        const originalX = a.x, originalY = a.y
+        for (let pass = 0; pass < 8; pass++) {
+          this._projectWalls(a)
+          if (!a.exited) {
+            a.x = clamp(a.x, -12.8 + a.r, 12.8 - a.r)
+            a.y = clamp(a.y, 0.0001, 26.8 - a.r)
+          }
+          if (this._clear(a.x, a.y, a.r - 0.0001)) break
+        }
+        if (!this._clear(a.x, a.y, a.r - 0.0001) || !bodySpace(a, a.x, a.y)) {
+          let found = false
+          for (let radius = 0.08; radius <= 6 && !found; radius += 0.08) {
+            for (const direction of directions) {
+              const x = originalX + direction.x * radius, y = originalY + direction.y * radius
+              if (!a.exited && (x < -12.8 + a.r || x > 12.8 - a.r || y < 0.0001 || y > 26.8 - a.r)) continue
+              if (a.exited && y > -0.0001) continue
+              if (this._clear(x, y, a.r + 0.001) && bodySpace(a, x, y)) {
+                a.x = x; a.y = y; found = true; break
+              }
+            }
+          }
+          if (!found) this._retireAgent(a)
+        }
+        if (a.active) reserve(a)
+        a._ox = a.x
+        a._oy = a.y
+        if (a.trail.length) a.trail[a.trail.length - 1] = { x: a.x, y: a.y }
+      }
+      this._compactAgents()
+      this._syncCounts()
+    }
+
+    _makeHash() {
+      const cell = 1.3, hash = new Map()
+      for (let i = 0; i < this.agents.length; i++) {
+        const a = this.agents[i]
+        if (!a.active) continue
+        const ix = Math.floor(a.x / cell), iy = Math.floor(a.y / cell), key = ix + ',' + iy
+        const bucket = hash.get(key)
+        if (bucket) bucket.push(a)
+        else hash.set(key, [a])
+      }
+      this._hash = hash
+    }
+
+    _neighbors(a, fn) {
+      const ix = Math.floor(a.x / 1.3), iy = Math.floor(a.y / 1.3)
+      for (let y = iy - 1; y <= iy + 1; y++) for (let x = ix - 1; x <= ix + 1; x++) {
+        const bucket = this._hash.get(x + ',' + y)
+        if (bucket) for (const other of bucket) if (other !== a && other.active) fn(other)
+      }
+    }
+
+    _projectWalls(a) {
+      for (const w of this.walls) {
+        const q = nearestOnSegment(a.x, a.y, w)
+        let dx = a.x - q.x, dy = a.y - q.y, dist = hypot(dx, dy)
+        const min = a.r + w.width / 2
+        if (dist >= min) continue
+        if (dist < 1e-7) {
+          const p = nearestOnSegment(a._ox, a._oy, w)
+          dx = a._ox - p.x; dy = a._oy - p.y; dist = hypot(dx, dy)
+          if (dist < 1e-7) {
+            dx = w.by - w.ay; dy = w.ax - w.bx; dist = hypot(dx, dy)
+            if (dist < 1e-7) { dx = (a.id & 1) ? 1 : -1; dy = 0; dist = 1 }
+          }
+        }
+        dx /= dist; dy /= dist
+        a.x = q.x + dx * (min + 0.0001)
+        a.y = q.y + dy * (min + 0.0001)
+        const vn = a.vx * dx + a.vy * dy
+        if (vn < 0) { a.vx -= vn * dx; a.vy -= vn * dy }
+      }
+      for (const c of this.circles) {
+        let dx = a.x - c.x, dy = a.y - c.y, dist = hypot(dx, dy)
+        const min = a.r + c.r
+        if (dist >= min) continue
+        if (dist < 1e-7) { dx = a.id % 2 ? 1 : -1; dy = 0; dist = 1 }
+        dx /= dist; dy /= dist
+        a.x = c.x + dx * (min + 0.0001)
+        a.y = c.y + dy * (min + 0.0001)
+        const vn = a.vx * dx + a.vy * dy
+        if (vn < 0) { a.vx -= vn * dx; a.vy -= vn * dy }
+      }
+    }
+
+    _finishGeometryStep(a) {
+      // Intersecting obstacles can undo one another's local projections.
+      // Keep the last valid point if their constraints cannot be resolved in
+      // this step, rather than leave a body inside a solid or push it through.
+      let clear = this._clear(a.x, a.y, a.r - 0.0001)
+      for (let pass = 0; pass < 8 && !clear; pass++) {
+        this._projectWalls(a)
+        clear = this._clear(a.x, a.y, a.r - 0.0001)
+      }
+      const displacement = hypot(a.x - a._ox, a.y - a._oy)
+      const escaped = !a.exited && (Math.abs(a.x) > 12.8 - a.r + 0.0002 || a.y > 26.8 - a.r + 0.0002)
+      const crossedSolid = displacement > a.r * 2 && !this._visible(a._ox, a._oy, a.x, a.y, a.r - 0.0001)
+      if (escaped || crossedSolid || !clear) {
+        a.x = a._ox
+        a.y = a._oy
+        a.vx = 0
+        a.vy = 0
+      }
+    }
+
+    _substep(dt) {
+      this.time += dt
+      this._makeHash()
+      for (const a of this.agents) {
+        if (!a.active) continue
+        a._ox = a.x; a._oy = a.y
+        const dir = this.directionAt(a.x, a.y)
+        const speed = this.params.desiredSpeed * a.speedFactor
+        let fx = (dir.x * speed - a.vx) / 0.5, fy = (dir.y * speed - a.vy) / 0.5
+        let close = 0
+        this._neighbors(a, b => {
+          let dx = a.x - b.x, dy = a.y - b.y
+          const d2 = dx * dx + dy * dy
+          if (d2 > 1.65 * 1.65 || d2 < 1e-9) return
+          const d = Math.sqrt(d2), r = a.r + b.r
+          dx /= d; dy /= d
+          if (d < 1) close++
+          const front = clamp(0.55 - 0.45 * (dir.x * dx + dir.y * dy), 0.15, 1)
+          const force = 1.65 * Math.exp((r - d) / 0.23) * front + Math.max(0, r - d) * 18
+          fx += dx * force; fy += dy * force
+        })
+        for (const w of this.walls) {
+          const q = nearestOnSegment(a.x, a.y, w)
+          let dx = a.x - q.x, dy = a.y - q.y, d = hypot(dx, dy)
+          if (d > 0.9 || d < 1e-7) continue
+          const force = 1.4 * Math.exp((a.r + w.width / 2 - d) / 0.16)
+          fx += dx / d * force; fy += dy / d * force
+        }
+        for (const c of this.circles) {
+          const dx = a.x - c.x, dy = a.y - c.y, d = hypot(dx, dy)
+          if (d > c.r + 0.9 || d < 1e-7) continue
+          const force = 1.4 * Math.exp((a.r + c.r - d) / 0.16)
+          fx += dx / d * force; fy += dy / d * force
+        }
+        const flen = hypot(fx, fy)
+        if (flen > 12) { fx *= 12 / flen; fy *= 12 / flen }
+        a.vx += fx * dt; a.vy += fy * dt
+        const v = hypot(a.vx, a.vy), cap = Math.max(1, speed * 1.45)
+        if (v > cap) { a.vx *= cap / v; a.vy *= cap / v }
+        a.x += a.vx * dt; a.y += a.vy * dt
+        a._neighborCount = close
+        a.stress += (clamp(close / 10 + (1 - Math.min(v / speed, 1)) * 0.15, 0, 1) - a.stress) * Math.min(1, dt * 3)
+        this._projectWalls(a)
+      }
+      // Position constraints prevent body overlap without arbitrary mass or force units.
+      for (let iteration = 0; iteration < 3; iteration++) {
+        if (iteration > 0) this._makeHash()
+        for (const a of this.agents) {
+          if (!a.active) continue
+          this._neighbors(a, b => {
+            if (b.id <= a.id) return
+            let dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy
+            const min = a.r + b.r
+            if (d2 >= min * min) return
+            if (d2 < 1e-10) { dx = (a.id & 1) ? 0.001 : -0.001; dy = 0; d2 = dx * dx }
+            const d = Math.sqrt(d2), correction = (min - d) * 0.5
+            dx /= d; dy /= d
+            a.x += dx * correction; a.y += dy * correction
+            b.x -= dx * correction; b.y -= dy * correction
+          })
+        }
+        for (const a of this.agents) if (a.active) this._projectWalls(a)
+      }
+      this._trailClock += dt
+      const addTrail = this._trailClock > 0.5
+      if (addTrail) this._trailClock = 0
+      for (const a of this.agents) {
+        if (!a.active) continue
+        this._finishGeometryStep(a)
+        // Measured velocity includes collision constraints and is what the UI reports.
+        a.vx = (a.x - a._ox) / dt
+        a.vy = (a.y - a._oy) / dt
+        const v = hypot(a.vx, a.vy)
+        if (v > 0.04) a.heading = Math.atan2(a.vy, a.vx)
+        if (!a.exited && a._oy >= 0 && a.y < 0 && Math.abs(a.x) < this.params.doorWidth / 2) {
+          a.exited = true
+          a.phase = 'outside'
+          a.exitTime = this.time
+          this.exited++
+          this.totalCrossings = this.exited
+          if (this.params.mode === 'finite' && a.cohortId === this._cohortId) this.batchExited++
+          this.exitTimes.push(this.time)
+        }
+        a.age = this.time - a.birthTime
+        a.outsideAge = a.exited ? this.time - a.exitTime : 0
+        if (a.exited && a.y < -8.5) this._retireAgent(a)
+        if (addTrail) { a.trail.push({ x: a.x, y: a.y }); if (a.trail.length > 18) a.trail.shift() }
+      }
+      this._compactAgents()
+      this._reconcilePopulation()
+      while (this.exitTimes.length && this.exitTimes[0] < this.time - 5) this.exitTimes.shift()
+      if (this.time + 1e-7 >= this._nextSample) {
+        this.history.push(this._snapshot())
+        this._nextSample += 1
+      }
+    }
+
+    step(dt = 1 / 30) {
+      const duration = clamp(finite(dt, 0), 0, 0.25)
+      const steps = Math.max(1, Math.ceil(duration / (1 / 30)))
+      for (let i = 0; i < steps; i++) if (duration > 0) this._substep(duration / steps)
+      return this
+    }
+
+    _snapshot() {
+      this._syncCounts()
+      let sumSpeed = 0, count = 0, doorCount = 0, stalled = 0, flow = 0, crossings5 = 0
+      for (const a of this.agents) {
+        if (!a.active || a.exited) continue
+        const speed = hypot(a.vx, a.vy)
+        sumSpeed += speed
+        count++
+        if (Math.abs(a.x) <= this.params.doorWidth / 2 + 1 && a.y >= 0 && a.y < 4) doorCount++
+        if (speed < 0.1 && a.age > 2) stalled++
+      }
+      for (const at of this.exitTimes) {
+        if (at > this.time - 1 + 1e-8) flow++
+        if (at > this.time - 5 + 1e-8) crossings5++
+      }
+      const p = this.params, finiteMode = p.mode === 'finite'
+      return {
+        time: this.time, exited: this.exited, totalCrossings: this.exited,
+        inside: this.inside, active: this.active, outside: this.active - this.inside,
+        total: this.total, requestedTotal: this.requestedTotal, unplaced: this.unplaced,
+        population: p.population, desiredSpeed: p.desiredSpeed, mode: p.mode,
+        doorWidth: p.doorWidth, guideAngle: p.guideAngle, guideLength: p.guideLength,
+        guideOffset: p.guideOffset, preset: p.preset, seed: p.seed,
+        sourceX: p.sourceX, sourceY: p.sourceY,
+        batchTotal: this.batchTotal, batchExited: finiteMode ? this.batchExited : 0,
+        batchRemaining: this.batchRemaining,
+        batchStartTime: this.batchStartTime,
+        batchElapsed: finiteMode ? Math.max(0, (this._batchCompletedAt === null ? this.time : this._batchCompletedAt) - this.batchStartTime) : 0,
+        flow, flow5: this.time > 0 ? crossings5 / Math.min(5, this.time) : 0,
+        meanSpeed: count ? sumSpeed / count : 0,
+        density: doorCount / ((p.doorWidth + 2) * 4), stalled,
+        geometryVersion: this.geometryVersion, membershipVersion: this.membershipVersion,
+        finished: finiteMode && this.batchTotal > 0 && this.batchRemaining === 0 && this.unplaced === 0
+      }
+    }
+
+    getStats() { return { ...this._snapshot(), history: this.history } }
+    get actual() { return this._snapshot() }
+
+    setParams(partial = {}) {
+      if (!partial || typeof partial !== 'object' || Array.isArray(partial)) return this
+      const old = this.params
+      this.params = this._normalizeParams(partial)
+      const p = this.params, modeChanged = old.mode !== p.mode
+      const populationGiven = Object.prototype.hasOwnProperty.call(partial, 'population') && Number.isFinite(finite(partial.population, NaN))
+      const sourceChanged = old.sourceX !== p.sourceX || old.sourceY !== p.sourceY
+      const geometryKeys = ['doorWidth', 'guideAngle', 'guideLength', 'guideOffset', 'preset']
+      const geometryChanged = geometryKeys.some(key => old[key] !== p[key])
+      if (modeChanged) {
+        this._cohortId++
+        this.batchExited = 0
+        this.batchStartTime = p.mode === 'finite' ? this.time : null
+        this._batchCompletedAt = null
+        if (p.mode === 'finite') {
+          let members = 0
+          for (const a of this.agents) {
+            a.cohortId = a.active && !a.exited ? this._cohortId : null
+            if (a.cohortId === this._cohortId) members++
+          }
+          if (!populationGiven) p.population = members
+          this._finiteTarget = p.population
+        } else {
+          this._finiteTarget = 0
+          for (const a of this.agents) a.cohortId = null
+        }
+      }
+      if (p.mode === 'finite' && populationGiven) {
+        p.population = Math.max(this.batchExited, p.population)
+        this._finiteTarget = p.population
+      }
+      if (old.seed !== p.seed) {
+        this._rng = randomSource(p.seed)
+        this._invalidateSpawnCandidates()
+      }
+      if (sourceChanged) this._invalidateSpawnCandidates()
+      if (geometryChanged) {
+        if (p.preset !== 'custom') this.obstacles = this._makePreset()
+        this._rebuildGeometry()
+        this._settleAfterGeometry()
+      }
+      this._reconcilePopulation(modeChanged || populationGiven || sourceChanged || geometryChanged || old.seed !== p.seed)
+      return this
+    }
+
+    getObstacles() { return this.obstacles.map(o => ({ ...o })) }
+
+    setObstacles(list) {
+      if (!Array.isArray(list)) return this
+      const valid = list.filter(o => o && typeof o === 'object' && ['wall', 'circle'].includes(o.type)).slice(0, 36)
+      if (list.length && !valid.length) return this
+      const usedIds = new Set()
+      this.obstacles = valid.map((o, i) => {
+        const baseId = (typeof o.id === 'string' || typeof o.id === 'number') && String(o.id) ? String(o.id).slice(0, 128) : 'obstacle-' + i
+        let id = baseId, suffix = 2
+        while (usedIds.has(id)) id = baseId + '-' + suffix++
+        usedIds.add(id)
+        if (o.type === 'circle') {
+          const radius = clamp(finite(o.r, 0.9), 0.25, 4)
+          return {
+          id, type: 'circle',
+          x: clamp(finite(o.x, 0), -12.5 + radius, 12.5 - radius),
+          y: clamp(finite(o.y, 12), 0.5 + radius, 26.5 - radius),
+          r: radius, height: clamp(finite(o.height, 1.2), 0.2, 3),
+          kind: 'obstacle', editable: true
+          }
+        }
+        return {
+          id, type: 'wall',
+          ax: clamp(finite(o.ax, -2), -13, 13), ay: clamp(finite(o.ay, 12), 0, 27),
+          bx: clamp(finite(o.bx, 2), -13, 13), by: clamp(finite(o.by, 12), 0, 27),
+          width: clamp(finite(o.width, 0.35), 0.18, 3), height: clamp(finite(o.height, 1.2), 0.2, 3),
+          kind: o.kind === 'guide' ? 'guide' : 'obstacle', editable: true
+        }
+      })
+      this.params.preset = 'custom'
+      this._rebuildGeometry()
+      this._settleAfterGeometry()
+      this._reconcilePopulation(true)
+      return this
+    }
+
+    moveSource(x, y) {
+      const px = finite(x, NaN), py = finite(y, NaN)
+      if (!Number.isFinite(px) || !Number.isFinite(py)) return this
+      return this.setParams({ sourceX: clamp(px, -12.4, 12.4), sourceY: clamp(py, 0.6, 26.4) })
+    }
+  }
+
+  CrowdEngine.DEFAULTS = { ...DEFAULTS }
+  if (typeof module !== 'undefined' && module.exports) module.exports = CrowdEngine
+  root.CrowdEngine = CrowdEngine
+})(typeof window !== 'undefined' ? window : globalThis)
+</script>
+<script>/* Crowd Flow Laboratory: cached, top-down Canvas rendering. */
+(function (global) {
+  'use strict';
+
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+  const finite = (n, fallback = 0) => Number.isFinite(n) ? n : fallback;
+  const TAU = Math.PI * 2;
+  const positive = (n, fallback) => Number.isFinite(n) && n > 0 ? n : fallback;
+  const validPoint = p => p && Number.isFinite(p.x) && Number.isFinite(p.y);
+  const validAgent = a => validPoint(a) && a.active !== false && !a.finished;
+  const validWall = w => w && [w.ax, w.ay, w.bx, w.by].every(Number.isFinite)
+    && (w.width === undefined || Number.isFinite(w.width) && w.width > 0);
+  const validCircle = c => validPoint(c) && c.type === 'circle'
+    && (c.r === undefined || Number.isFinite(c.r) && c.r > 0);
+  const PERSON_COLORS = ['#468594', '#548e97', '#39788b', '#4d8c8e', '#a0a277', '#b99a6d', '#bc856b'];
+
+  class CrowdRenderer {
+    constructor(canvas, engine) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d', { alpha: false });
+      this.engine = engine;
+      this.view = 'plan';
+      this.width = this.height = 0;
+      this.scale = this.dpr = 1;
+      this.ox = this.oy = 0;
+      this.groundCanvas = document.createElement('canvas');
+      this.geometryCanvas = document.createElement('canvas');
+      this.arrowCanvas = document.createElement('canvas');
+      this.heatSprites = [];
+      this.personBuckets = Array.from({ length: 21 }, () => []);
+      this.densityCell = 1.5;
+      this.densityCols = 19;
+      this.densityRows = 26;
+      this.densityGrid = new Uint16Array(this.densityCols * this.densityRows);
+      this.dirty = true;
+      this.cacheDirty = true;
+      this.lastFrameKey = '';
+      this.lastGeometryVersion = null;
+      this.lastWalls = null;
+      this.lastObstacles = null;
+      this.lastAgents = null;
+      this.walls = [];
+      this.circles = [];
+      this._makeHeatSprites();
+      this.resize();
+    }
+
+    setEngine(engine) {
+      if (engine !== this.engine) {
+        this.engine = engine;
+        this.lastGeometryVersion = null;
+        this.lastWalls = this.lastObstacles = this.lastAgents = null;
+        this.cacheDirty = this.dirty = true;
+      }
+    }
+
+    setView() {
+      this.view = 'plan';
+    }
+
+    resize() {
+      const rect = this.canvas.getBoundingClientRect();
+      const width = positive(rect.width, positive(this.canvas.clientWidth, 900));
+      const height = positive(rect.height, positive(this.canvas.clientHeight, 560));
+      const dpr = Math.min(2, positive(global.devicePixelRatio, 1));
+      if (width === this.width && height === this.height && dpr === this.dpr) return;
+      this.width = width;
+      this.height = height;
+      this.dpr = dpr;
+      const pixelWidth = Math.max(1, Math.round(width * dpr));
+      const pixelHeight = Math.max(1, Math.round(height * dpr));
+      for (const surface of [this.canvas, this.groundCanvas, this.geometryCanvas, this.arrowCanvas]) {
+        surface.width = pixelWidth;
+        surface.height = pixelHeight;
+      }
+      const compact = width < 560;
+      const side = Math.min(compact ? 15 : 25, width * .08);
+      const top = Math.min(compact ? 44 : 43, height * .12);
+      const bottom = Math.min(compact ? 63 : 61, height * .18);
+      this.scale = Math.max(.001, Math.min((width - side * 2) / 28, (height - top - bottom) / 37.6));
+      this.ox = width / 2;
+      this.oy = top + (height - top - bottom) / 2 - 9.1 * this.scale;
+      this.cacheDirty = this.dirty = true;
+    }
+
+    project(x, y) {
+      return { x: this.ox + x * this.scale, y: this.oy + y * this.scale };
+    }
+
+    screenToWorld(clientX, clientY) {
+      const rect = this.canvas.getBoundingClientRect();
+      const px = (clientX - rect.left) * this.width / Math.max(1, rect.width);
+      const py = (clientY - rect.top) * this.height / Math.max(1, rect.height);
+      return { x: (px - this.ox) / this.scale, y: (py - this.oy) / this.scale };
+    }
+
+    getScaleBarPixels() {
+      return 5 * this.scale;
+    }
+
+    _makeHeatSprites() {
+      for (const color of ['74,153,153', '96,170,153', '188,186,108', '224,165,85', '219,118,77', '198,81,68']) {
+        const sprite = document.createElement('canvas');
+        sprite.width = sprite.height = 64;
+        const ctx = sprite.getContext('2d');
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, `rgba(${color},.65)`);
+        gradient.addColorStop(.45, `rgba(${color},.34)`);
+        gradient.addColorStop(1, `rgba(${color},0)`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+        this.heatSprites.push(sprite);
+      }
+    }
+
+    _wallPath(ctx, wall) {
+      const a = this.project(wall.ax, wall.ay);
+      const b = this.project(wall.bx, wall.by);
+      const radius = positive(wall.width, .38) * this.scale / 2;
+      const dx = b.x - a.x, dy = b.y - a.y;
+      ctx.beginPath();
+      // The engine treats walls as thick segments, including circular end caps.
+      if (Math.hypot(dx, dy) < 1e-8) {
+        ctx.arc(a.x, a.y, radius, 0, TAU);
+      } else {
+        const angle = Math.atan2(dy, dx);
+        const nx = -Math.sin(angle) * radius;
+        const ny = Math.cos(angle) * radius;
+        ctx.moveTo(a.x + nx, a.y + ny);
+        ctx.lineTo(b.x + nx, b.y + ny);
+        ctx.arc(b.x, b.y, radius, angle + Math.PI / 2, angle - Math.PI / 2, true);
+        ctx.lineTo(a.x - nx, a.y - ny);
+        ctx.arc(a.x, a.y, radius, angle - Math.PI / 2, angle + Math.PI / 2, true);
+      }
+      ctx.closePath();
+    }
+
+    _line(ctx, ax, ay, bx, by) {
+      ctx.moveTo(this.ox + ax * this.scale, this.oy + ay * this.scale);
+      ctx.lineTo(this.ox + bx * this.scale, this.oy + by * this.scale);
+    }
+
+    _syncGeometry() {
+      if (this.lastGeometryVersion !== this.engine.geometryVersion || this.lastWalls !== this.engine.walls || this.lastObstacles !== this.engine.obstacles) {
+        this.lastGeometryVersion = this.engine.geometryVersion;
+        this.lastWalls = this.engine.walls;
+        this.lastObstacles = this.engine.obstacles;
+        this.walls = Array.isArray(this.engine.walls) ? this.engine.walls.filter(validWall) : [];
+        this.circles = Array.isArray(this.engine.obstacles) ? this.engine.obstacles.filter(validCircle) : [];
+        this.cacheDirty = this.dirty = true;
+      }
+    }
+
+    _cacheGround(lang) {
+      const ctx = this.groundCanvas.getContext('2d', { alpha: false });
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.fillStyle = '#edf1ed';
+      ctx.fillRect(0, 0, this.width, this.height);
+      const s = this.scale;
+      ctx.fillStyle = '#e4eee6';
+      ctx.fillRect(this.ox - 13.35 * s, this.oy - 9.25 * s, 26.7 * s, 9.25 * s);
+      ctx.fillStyle = '#fafbf7';
+      ctx.fillRect(this.ox - 13.35 * s, this.oy - .25 * s, 26.7 * s, 27.6 * s);
+      ctx.beginPath();
+      for (let x = -12; x <= 12; x += 2) this._line(ctx, x, .55, x, 26.45);
+      for (let y = 2; y <= 26; y += 2) this._line(ctx, -12.45, y, 12.45, y);
+      ctx.strokeStyle = 'rgba(76,110,112,.065)';
+      ctx.lineWidth = .65;
+      ctx.stroke();
+      const doorWidth = positive(this.engine.params && this.engine.params.doorWidth, 3.2);
+      ctx.fillStyle = '#b9ddd0';
+      ctx.fillRect(this.ox - doorWidth / 2 * s, this.oy - .55 * s, doorWidth * s, 1.05 * s);
+      ctx.beginPath();
+      for (const y of [-2.2, -4.35, -6.5]) {
+        const half = Math.min(.62, doorWidth * .23);
+        this._line(ctx, -half, y + .35, 0, y - .28);
+        this._line(ctx, 0, y - .28, half, y + .35);
+      }
+      ctx.lineWidth = Math.max(1.1, s * .075);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(73,136,115,.35)';
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#678c7d';
+      ctx.font = '600 10px ui-sans-serif, system-ui, sans-serif';
+      ctx.fillText(lang === 'en' ? 'EXIT' : '出口', this.ox, this.oy - 8.35 * s);
+      this.cachedLanguage = lang;
+      this.cachedDoorWidth = doorWidth;
+    }
+
+    _cacheGeometry() {
+      const ctx = this.geometryCanvas.getContext('2d');
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.clearRect(0, 0, this.width, this.height);
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = .75;
+      for (const wall of this.walls) {
+        this._wallPath(ctx, wall);
+        ctx.fillStyle = wall.editable ? '#526b7a' : '#405969';
+        ctx.strokeStyle = '#728995';
+        ctx.fill();
+        ctx.stroke();
+      }
+      for (const ob of this.circles) {
+        const p = this.project(ob.x, ob.y);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, finite(ob.r, .9) * this.scale, 0, TAU);
+        ctx.fillStyle = '#526b7a';
+        ctx.strokeStyle = '#7c929c';
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    _isBlocked(x, y) {
+      for (const circle of this.circles) if (Math.hypot(x - circle.x, y - circle.y) < finite(circle.r, .9) + .3) return true;
+      for (const wall of this.walls) {
+        const dx = wall.bx - wall.ax, dy = wall.by - wall.ay;
+        const t = clamp(((x - wall.ax) * dx + (y - wall.ay) * dy) / Math.max(.0001, dx * dx + dy * dy), 0, 1);
+        if (Math.hypot(x - wall.ax - dx * t, y - wall.ay - dy * t) < finite(wall.width, .38) / 2 + .3) return true;
+      }
+      return false;
+    }
+
+    _cacheArrows() {
+      const ctx = this.arrowCanvas.getContext('2d');
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.clearRect(0, 0, this.width, this.height);
+      if (typeof this.engine.directionAt !== 'function') return;
+      ctx.beginPath();
+      for (let y = 2.4; y < 26; y += 3.1) {
+        for (let x = -11.4; x < 12; x += 3.1) {
+          if (this._isBlocked(x, y)) continue;
+          const direction = this.engine.directionAt(x, y);
+          if (!direction || direction.reachable === false) continue;
+          let dx = finite(direction.dx, finite(direction.x));
+          let dy = finite(direction.dy, finite(direction.y));
+          const length = Math.hypot(dx, dy);
+          if (length < .01) continue;
+          dx /= length;
+          dy /= length;
+          const a = this.project(x - dx * .4, y - dy * .4);
+          const b = this.project(x + dx * .4, y + dy * .4);
+          const angle = Math.atan2(dy, dx);
+          const tip = Math.min(4, this.scale * .25);
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.moveTo(b.x - tip * Math.cos(angle - .55), b.y - tip * Math.sin(angle - .55));
+          ctx.lineTo(b.x, b.y);
+          ctx.lineTo(b.x - tip * Math.cos(angle + .55), b.y - tip * Math.sin(angle + .55));
+        }
+      }
+      ctx.strokeStyle = 'rgba(49,132,140,.34)';
+      ctx.lineWidth = 1.05;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+
+    _paintLayer(surface) {
+      this.ctx.drawImage(surface, 0, 0, surface.width, surface.height, 0, 0, this.width, this.height);
+    }
+
+    _drawDensity(agents) {
+      const grid = this.densityGrid;
+      const cell = this.densityCell;
+      grid.fill(0);
+      for (const a of agents) {
+        if (!validAgent(a)) continue;
+        const x = Math.floor((a.x + 14) / cell);
+        const y = Math.floor((a.y + 10) / cell);
+        if (x >= 0 && x < this.densityCols && y >= 0 && y < this.densityRows) grid[y * this.densityCols + x]++;
+      }
+      const radius = cell * 1.2 * this.scale;
+      const ctx = this.ctx;
+      for (let i = 0; i < grid.length; i++) {
+        if (!grid[i]) continue;
+        const density = grid[i] / (cell * cell);
+        const level = clamp(Math.floor(density * 1.3), 0, this.heatSprites.length - 1);
+        const x = -14 + (i % this.densityCols + .5) * cell;
+        const y = -10 + (Math.floor(i / this.densityCols) + .5) * cell;
+        const p = this.project(x, y);
+        ctx.globalAlpha = clamp(.35 + density * .2, .35, .84);
+        ctx.drawImage(this.heatSprites[level], p.x - radius, p.y - radius, radius * 2, radius * 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    _drawPaths(agents) {
+      this._paintLayer(this.arrowCanvas);
+      const ctx = this.ctx;
+      const stride = Math.max(1, Math.ceil(agents.length / 90));
+      ctx.beginPath();
+      for (let i = 0; i < agents.length; i += stride) {
+        const a = agents[i];
+        if (!validAgent(a) || !Array.isArray(a.trail)) continue;
+        let penDown = false;
+        for (const point of a.trail) {
+          if (!validPoint(point)) { penDown = false; continue; }
+          const p = this.project(point.x, point.y);
+          if (penDown) ctx.lineTo(p.x, p.y);
+          else ctx.moveTo(p.x, p.y);
+          penDown = true;
+        }
+      }
+      ctx.strokeStyle = 'rgba(47,136,146,.22)';
+      ctx.lineWidth = 1.15;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    _drawPeople(agents, mode) {
+      const buckets = this.personBuckets;
+      for (const bucket of buckets) bucket.length = 0;
+      for (const a of agents) {
+        if (!validAgent(a)) continue;
+        const stress = clamp(finite(a.stress), 0, 1);
+        const tone = stress > .87 ? 6 : stress > .72 ? 5 : stress > .57 ? 4 : Math.abs(Math.trunc(finite(Number(a.id)))) % 4;
+        const fade = a.exited ? a.y < -7.5 ? 2 : 1 : 0;
+        buckets[fade * 7 + tone].push(a);
+      }
+      const ctx = this.ctx;
+      for (let i = 0; i < buckets.length; i++) {
+        const bucket = buckets[i];
+        if (!bucket.length) continue;
+        ctx.beginPath();
+        for (const a of bucket) {
+          const x = this.ox + a.x * this.scale;
+          const y = this.oy + a.y * this.scale;
+          const radius = Math.max(1.25, positive(a.r, .23) * this.scale);
+          ctx.moveTo(x + radius, y);
+          ctx.arc(x, y, radius, 0, TAU);
+        }
+        ctx.fillStyle = PERSON_COLORS[i % 7];
+        ctx.globalAlpha = [1, .68, .26][Math.floor(i / 7)] * (mode === 'density' ? .76 : 1);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    _drawSource(editing) {
+      const params = this.engine.params || {};
+      if (!Number.isFinite(params.sourceX) || !Number.isFinite(params.sourceY)) return;
+      const p = this.project(params.sourceX, params.sourceY);
+      const radius = Math.max(6, this.scale * .7);
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, TAU);
+      ctx.strokeStyle = editing ? 'rgba(49,128,132,.8)' : 'rgba(49,128,132,.4)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(p.x - 3, p.y); ctx.lineTo(p.x + 3, p.y);
+      ctx.moveTo(p.x, p.y - 3); ctx.lineTo(p.x, p.y + 3);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    _handle(x, y, radius = 3.3) {
+      const p = this.project(x, y);
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, radius, 0, TAU);
+      this.ctx.fillStyle = '#fffaf0';
+      this.ctx.strokeStyle = '#d79a54';
+      this.ctx.lineWidth = 1.4;
+      this.ctx.fill();
+      this.ctx.stroke();
+    }
+
+    _drawSelection(id) {
+      if (id === null || id === undefined) return;
+      const ob = this.circles.find(o => o.id === id) || this.walls.find(o => o.id === id);
+      if (!ob || !(ob.type === 'circle' ? validCircle(ob) : validWall(ob))) return;
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.strokeStyle = '#db9b55';
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      if (ob.type === 'circle') {
+        const p = this.project(ob.x, ob.y);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, finite(ob.r, .9) * this.scale + 1, 0, TAU);
+        ctx.stroke();
+        this._handle(ob.x, ob.y, 4);
+      } else {
+        this._wallPath(ctx, ob);
+        ctx.stroke();
+        this._handle(ob.ax, ob.ay);
+        this._handle(ob.bx, ob.by);
+        this._handle((ob.ax + ob.bx) / 2, (ob.ay + ob.by) / 2, 4);
+      }
+      ctx.restore();
+    }
+
+    _drawPreview(preview) {
+      if (!preview) return;
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.setLineDash([4, 3]);
+      ctx.fillStyle = 'rgba(220,164,98,.24)';
+      ctx.strokeStyle = '#bd884b';
+      ctx.lineWidth = 1.5;
+      if (validCircle(preview)) {
+        const p = this.project(preview.x, preview.y);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, finite(preview.r, .9) * this.scale, 0, TAU);
+        ctx.fill();
+        ctx.stroke();
+      } else if (validWall(preview)) {
+        this._wallPath(ctx, preview);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    draw(options = {}) {
+      if (!this.engine) return false;
+      this._syncGeometry();
+      const mode = options.mode === 'density' || options.mode === 'paths' ? options.mode : 'people';
+      const lang = options.lang === 'zh-CN' || options.lang === 'zh-TW' ? options.lang : 'en';
+      const selectedId = options.selectedId == null ? '' : options.selectedId;
+      const previewKey = options.preview ? JSON.stringify(options.preview) : '';
+      const params = this.engine.params || {};
+      const doorWidth = positive(params.doorWidth, 3.2);
+      const frameKey = [finite(this.engine.time, finite(options.time)), this.engine.membershipVersion,
+        this.engine.geometryVersion, mode, lang, selectedId, !!options.editing, previewKey,
+        params.sourceX, params.sourceY, doorWidth].join('|');
+      if (!this.dirty && frameKey === this.lastFrameKey && this.lastAgents === this.engine.agents) return false;
+      if (this.cacheDirty) {
+        this._cacheGround(lang);
+        this._cacheGeometry();
+        this._cacheArrows();
+        this.cacheDirty = false;
+      } else if (this.cachedLanguage !== lang || this.cachedDoorWidth !== doorWidth) {
+        this._cacheGround(lang);
+      }
+      const ctx = this.ctx;
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.setLineDash([]);
+      this._paintLayer(this.groundCanvas);
+      const agents = Array.isArray(this.engine.agents) ? this.engine.agents : [];
+      if (mode === 'density') this._drawDensity(agents);
+      if (mode === 'paths') this._drawPaths(agents);
+      this._drawSource(!!options.editing);
+      this._drawPeople(agents, mode);
+      this._paintLayer(this.geometryCanvas);
+      this._drawSelection(options.selectedId);
+      this._drawPreview(options.preview);
+      this.lastFrameKey = frameKey;
+      this.lastAgents = this.engine.agents;
+      this.dirty = false;
+      return true;
+    }
+  }
+
+  global.CrowdRenderer = CrowdRenderer;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>/* Crowd Flow Laboratory interface translations. */
+(function () {
+  'use strict';
+  const entries = {
+    modeContinuous: ['Continuous flow', '持续人流', '持續人流'],
+    modeFinite: ['Fixed population', '固定人数', '固定人數'],
+    simulationMode: ['Simulation mode', '模拟模式', '模擬模式'],
+    throughput: ['Throughput', '通行率', '通行率'],
+    lastSecond: ['Crossings in the last 1 s', '最近 1 秒通过人数', '最近 1 秒通過人數'],
+    activePopulation: ['Target population', '目标人数', '目標人數'],
+    peopleInside: ['Inside the room', '房间内人数', '房間內人數'],
+    totalCrossings: ['Total crossings', '累计通过人次', '累計通過人次'],
+    batchProgress: ['Batch progress', '本组进度', '本組進度'],
+    liveChanges: ['Changes apply immediately.', '更改立即生效。', '變更立即生效。'],
+    restartFlow: ['Restart', '重新开始', '重新開始'],
+    modeHintContinuous: ['People return to the starting area after leaving.', '人员离开后返回起始区域。', '人員離開後返回起始區域。'],
+    modeHintFinite: ['The run ends when the current group has left.', '当前人群全部离开后结束。', '目前人群全部離開後結束。'],
+    obstacleSize: ['Size', '尺寸', '尺寸'],
+    wallLength: ['Length', '长度', '長度'],
+    wallWidth: ['Width', '宽度', '寬度'],
+    columnRadius: ['Radius', '半径', '半徑'],
+    newScene: ['New scene', '新场景', '新場景'],
+    flowChart: ['Throughput over time', '通行率变化', '通行率變化'],
+    flowChartLabel: ['Throughput in people per simulated second', '每模拟秒通过出口的人数', '每模擬秒通過出口的人數'],
+    flowAxis: ['people/s', '人/秒', '人/秒'],
+    brand: ['Crowd Flow Laboratory', '人群流动实验室', '人群流動實驗室'],
+    brandCaption: ['Crowd movement', '人群流动', '人群流動'],
+    offline: ['Offline', '离线运行', '離線執行'],
+    methods: ['Methods', '方法', '方法'],
+    eyebrow: ['Simulation', '模拟', '模擬'],
+    headline: ['Crowd flow', '人群流动', '人群流動'],
+    intro: ['Adjust the layout and observe the flow.', '调整布局，观察流动。', '調整配置，觀察流動。'],
+    experiments: ['Guided experiments', '实验指引', '實驗指引'],
+    liveSimulation: ['Simulation', '模拟', '模擬'],
+    running: ['Running', '运行中', '執行中'],
+    paused: ['Paused', '已暂停', '已暫停'],
+    editing: ['Editing', '编辑中', '編輯中'],
+    completed: ['Complete', '已完成', '已完成'],
+    isometric: ['Isometric', '等轴测', '等軸測'],
+    plan: ['Plan', '俯视', '俯視'],
+    topView: ['2D top view', '二维俯视图', '二維俯視圖'],
+    floorPlan: ['Floor plan', '空间平面', '空間平面'],
+    simulationTime: ['Simulation time', '模拟时间', '模擬時間'],
+    peopleView: ['People', '人群', '人群'],
+    densityView: ['Density', '密度', '密度'],
+    pathsView: ['Paths', '路径', '路徑'],
+    peopleLegend: ['Lower crowding', '较稀疏', '較稀疏'],
+    slowLegend: ['Higher crowding', '较拥挤', '較擁擠'],
+    lowerDensity: ['Lower density', '密度较低', '密度較低'],
+    higherDensity: ['Higher density', '密度较高', '密度較高'],
+    selectTool: ['Move', '移动', '移動'],
+    wallTool: ['Wall', '墙体', '牆體'],
+    columnTool: ['Column', '立柱', '立柱'],
+    sourceTool: ['Entry point', '进入位置', '進入位置'],
+    deleteTool: ['Delete', '删除', '刪除'],
+    rotation: ['Rotation', '旋转', '旋轉'],
+    runComplete: ['Run complete', '本次模拟已完成', '本次模擬已完成'],
+    runAgain: ['Run again', '再次运行', '再次執行'],
+    play: ['Play', '开始', '開始'],
+    pause: ['Pause', '暂停', '暫停'],
+    restart: ['Restart simulation', '重新开始模拟', '重新開始模擬'],
+    editLayout: ['Edit layout', '编辑布局', '編輯配置'],
+    doneEditing: ['Finish editing', '完成编辑', '完成編輯'],
+    passedExit: ['Passed the exit', '已通过出口', '已通過出口'],
+    flowRate: ['Throughput', '通行率', '通行率'],
+    personsPerSecond: ['people/s', '人/秒', '人/秒'],
+    rollingWindow: ['Crossings in the last 1 s', '最近 1 秒通过人数', '最近 1 秒通過人數'],
+    meanSpeed: ['Mean speed', '平均速度', '平均速度'],
+    insideRoom: ['People inside the room', '房间内人员', '房間內人員'],
+    exitDensity: ['Exit-zone density', '出口区域密度', '出口區域密度'],
+    personsPerArea: ['people/m²', '人/平方米', '人/平方公尺'],
+    nearExit: ['4 m deep measurement zone', '出口前方 4 米测量区', '出口前方 4 公尺測量區'],
+    configuration: ['Parameters', '参数', '參數'],
+    restore: ['Restore', '恢复默认', '恢復預設'],
+    startingLayout: ['Layout', '布局', '配置'],
+    presetOpen: ['Open room', '开放空间', '開放空間'],
+    presetGuided: ['Guide walls', '斜向导流', '斜向導流'],
+    presetColumn: ['Central column', '中央立柱', '中央立柱'],
+    presetNarrow: ['Narrow exit', '狭窄出口', '狹窄出口'],
+    presetCustom: ['Custom layout', '自定义布局', '自訂配置'],
+    crowd: ['Crowd', '人群', '人群'],
+    agents: ['People', '人员', '人員'],
+    population: ['Population', '人数', '人數'],
+    peopleUnit: ['people', '人', '人'],
+    desiredSpeed: ['Desired speed', '期望速度', '期望速度'],
+    slower: ['Slower', '较慢', '較慢'],
+    faster: ['Faster', '较快', '較快'],
+    geometry: ['Geometry', '空间几何', '空間幾何'],
+    meters: ['Metres and degrees', '米与角度', '公尺與角度'],
+    doorWidth: ['Exit width', '出口宽度', '出口寬度'],
+    guideAngle: ['Guide angle', '导流角度', '導流角度'],
+    guideLength: ['Guide length', '导流板长度', '導流板長度'],
+    guideOffset: ['Exit offset', '出口间距', '出口間距'],
+    resetHint: ['Changes apply immediately.', '更改立即生效。', '變更立即生效。'],
+    saveScene: ['Save scene', '保存场景', '儲存場景'],
+    loadScene: ['Load scene', '载入场景', '載入場景'],
+    seed: ['Random seed', '随机种子', '隨機種子'],
+    apply: ['Apply', '应用', '套用'],
+    observations: ['Throughput', '通行率', '通行率'],
+    exportData: ['Export CSV', '导出 CSV', '匯出 CSV'],
+    cumulativeExits: ['Total crossings', '累计通过人次', '累計通過人次'],
+    simulationSeconds: ['Simulation seconds', '模拟时间（秒）', '模擬時間（秒）'],
+    lookCloser: ['Observation', '观察', '觀察'],
+    recordRun: ['Record this run', '记录当前结果', '記錄目前結果'],
+    runRecords: ['Run records', '模拟记录', '模擬記錄'],
+    clearRecords: ['Clear records', '清空记录', '清空記錄'],
+    recordLayout: ['Layout', '布局', '配置'],
+    recordTime: ['Time (s)', '时间（秒）', '時間（秒）'],
+    recordFlow: ['Throughput (people/s)', '通行率（人/秒）', '通行率（人/秒）'],
+    recordWidth: ['Exit width (m)', '出口宽度（米）', '出口寬度（公尺）'],
+    recordNote: ['Records capture the current measurements.', '记录保存当前测量结果。', '記錄儲存目前測量結果。'],
+    footer: ['Crowd Flow Laboratory', '人群流动实验室', '人群流動實驗室'],
+    localComputation: ['Local calculation', '本地计算', '本機運算'],
+    references: ['Methods & references', '方法与参考文献', '方法與參考文獻'],
+    sceneSaved: ['Scene exported.', '场景已导出。', '場景已匯出。'],
+    sceneLoaded: ['Scene loaded.', '场景已载入。', '場景已載入。'],
+    sceneInvalid: ['This file does not contain a valid scene.', '此文件不包含有效场景。', '此檔案不包含有效場景。'],
+    sceneTooLarge: ['The scene file exceeds the supported size.', '场景文件超过支持的大小。', '場景檔案超過支援的大小。'],
+    recordSaved: ['Current results recorded.', '已记录当前结果。', '已記錄目前結果。'],
+    recordsCleared: ['Run records cleared.', '模拟记录已清空。', '模擬記錄已清空。'],
+    layoutRestarted: ['Layout updated.', '布局已更新。', '配置已更新。'],
+    invalidPlacement: ['Choose a position inside the room.', '请选择房间内的位置。', '請選擇房間內的位置。'],
+    objectAdded: ['Obstacle added.', '障碍物已添加。', '障礙物已新增。'],
+    objectDeleted: ['Obstacle deleted.', '障碍物已删除。', '障礙物已刪除。'],
+    sourceMoved: ['Entry point updated.', '进入位置已更新。', '進入位置已更新。'],
+    wallHint: ['Select the first endpoint of a new wall.', '点击新墙体的起点。', '點選新牆體的起點。'],
+    columnHint: ['Select a position to add a column.', '点击位置以添加立柱。', '點選位置以新增立柱。'],
+    sourceHint: ['Select where new arrivals enter.', '点击新增人员的进入位置。', '點選新增人員的進入位置。'],
+    selectHint: ['Select an obstacle, or use [ and ].', '选中障碍物，或按 [ 和 ] 切换。', '選取障礙物，或按 [ 和 ] 切換。'],
+    selectedHint: ['Drag or use arrow keys to move.', '拖动或按方向键移动。', '拖曳或按方向鍵移動。'],
+    keyboardEditingHelp: ['In edit mode, press [ or ] to select an obstacle. Arrow keys move it by 0.25 m. Hold Shift to move 1 m. Delete removes it. Space pauses or resumes the simulation.', '编辑时，按 [ 或 ] 选择障碍物。方向键每次移动 0.25 米，按住 Shift 时每次移动 1 米。Delete 删除所选障碍物，空格键暂停或继续模拟。', '編輯時，按 [ 或 ] 選取障礙物。方向鍵每次移動 0.25 公尺，按住 Shift 時每次移動 1 公尺。Delete 刪除所選障礙物，空白鍵暫停或繼續模擬。'],
+    finishWallHint: ['Select the second endpoint to finish the wall.', '点击终点以完成墙体。', '點選終點以完成牆體。'],
+    completionSummary: ['Everyone in the group has passed the exit.', '本组所有人员均已通过出口。', '本組所有人員均已通過出口。'],
+    noData: ['Start the simulation before recording a result.', '请先运行模拟，再记录结果。', '請先執行模擬，再記錄結果。'],
+    limitObjects: ['The scene has reached its obstacle limit.', '场景中的障碍物数量已达到上限。', '場景中的障礙物數量已達到上限。'],
+    seedApplied: ['Random seed updated.', '随机种子已更新。', '隨機種子已更新。'],
+    flowUnavailable: ['Awaiting exit data', '等待出口数据', '等待出口資料'],
+    chartEmpty: ['Throughput appears as the simulation runs.', '模拟运行后显示通行率。', '模擬執行後顯示通行率。'],
+    close: ['Close', '关闭', '關閉'],
+    placementLimited: ['Placed {placed} of {requested} people. Increase the available floor area to place the full crowd.', '已放置 {placed} 人，目标为 {requested} 人。腾出更多可用空间，以放置全部人员。', '已放置 {placed} 人，目標為 {requested} 人。騰出更多可用空間，以放置全部人員。'],
+    recordSpeed: ['Desired speed (m/s)', '期望速度（米/秒）', '期望速度（公尺/秒）'],
+    recordSeed: ['Seed', '随机种子', '隨機種子'],
+    languageLabel: ['Language', '语言', '語言'],
+    sceneLabel: ['2D top view of people shown as dots moving around obstacles towards the exit', '二维俯视图，圆点表示绕过障碍物并向出口移动的人群', '二維俯視圖，圓點表示繞過障礙物並向出口移動的人群'],
+    displayMode: ['Display mode', '显示模式', '顯示模式'],
+    cameraView: ['Camera view', '观察视角', '觀察視角'],
+    playbackSpeed: ['Playback speed', '播放速度', '播放速度'],
+    simulationLabel: ['Crowd simulation', '人群模拟', '人群模擬'],
+    chartLabel: ['Exit throughput over simulation time', '出口通行率随模拟时间变化', '出口通行率隨模擬時間變化'],
+    downloadFailed: ['The file could not be downloaded.', '文件未能下载。', '檔案未能下載。'],
+    insightTitleOpen: ['Exit approach', '出口汇流', '出口匯流'],
+    insightTextOpen: ['Watch the crowd converge on the doorway. Compare the growing queue with the number of people crossing the exit each second.', '观察人群如何向门口汇聚，并对照不断形成的队列与每秒通过出口的人数。', '觀察人群如何向門口匯聚，並對照不斷形成的隊列與每秒通過出口的人數。'],
+    insightTitleGuided: ['Guide walls', '导流板', '導流板'],
+    insightTextGuided: ['Change the guide-wall angle and observe where streams merge. Compare exit counts at the same time to examine each layout’s effect.', '调整导流板角度，观察人群在哪里汇流。在相同模拟时刻比较累计通过人数，分析布局的影响。', '調整導流板角度，觀察人群在哪裡匯流。在相同模擬時刻比較累計通過人數，分析配置的影響。'],
+    insightTitleColumn: ['Column position', '立柱位置', '立柱位置'],
+    insightTextColumn: ['Move the column and inspect the paths on either side. Its position changes both the available gaps and the point where the streams rejoin.', '移动立柱，观察两侧路径。立柱的位置既改变可用通道，也改变两侧人群再次汇合的位置。', '移動立柱，觀察兩側路徑。立柱的位置既改變可用通道，也改變兩側人群再次匯合的位置。'],
+    insightTitleNarrow: ['Exit bottleneck', '出口瓶颈', '出口瓶頸'],
+    insightTextNarrow: ['A narrow exit concentrates movement into fewer paths. Observe the density near the opening and compare it with the exit flow.', '狭窄出口使人群汇入更少的通行路径。观察出口附近的密度，并结合出口流量进行比较。', '狹窄出口使人群匯入更少的通行路徑。觀察出口附近的密度，並結合出口流量進行比較。'],
+    insightTitleCustom: ['Layout', '布局', '配置'],
+    insightTextCustom: ['Change one element at a time. Use the same population and seed, then compare paths, local density, and exit counts at the same simulated time.', '每次只改变一个要素。保持人数和随机种子一致，在相同模拟时刻比较路径、局部密度与累计通过人数。', '每次只改變一個要素。保持人數和隨機種子一致，在相同模擬時刻比較路徑、局部密度與累計通過人數。'],
+    methodEyebrow: ['Model and measurement', '模型与测量', '模型與測量'],
+    methodTitle: ['Methods', '方法', '方法'],
+    experimentEyebrow: ['CONTROLLED COMPARISONS', '控制变量比较', '控制變因比較'],
+    experimentTitle: ['Three ways to explore the flow', '三个流动实验', '三個流動實驗']
+  };
+  const languages = ['en', 'zh-CN', 'zh-TW'];
+  const dictionaries = Object.fromEntries(languages.map((language, index) => [language, Object.fromEntries(Object.entries(entries).map(([key, values]) => [key, values[index]]))]));
+  const referenceList = `<ul class="reference-list"><li><a href="https://doi.org/10.1103/PhysRevE.51.4282" target="_blank" rel="noopener noreferrer">Helbing &amp; Molnár (1995). Social force model for pedestrian dynamics.</a></li><li><a href="https://doi.org/10.1287/trsc.1090.0263" target="_blank" rel="noopener noreferrer">Seyfried et al. (2009). New Insights into Pedestrian Flow Through Bottlenecks.</a></li><li><a href="https://doi.org/10.1038/s41598-020-72733-w" target="_blank" rel="noopener noreferrer">Feliciani et al. (2020). Systematic experimental investigation of the obstacle effect during non-competitive and extremely competitive evacuations.</a></li></ul>`;
+  dictionaries.en.methodBody = `<p>People are represented by discs. A navigation field directs them towards the exit. Local avoidance and collision constraints govern their movement around other people and obstacles. Distances are in metres and time is in simulated seconds.</p><p>Continuous flow returns people to the entry area after they leave. Selecting Fixed population forms a group from the people currently inside the room. The run ends when that group has left. Population and layout changes take effect during the run.</p><h3>Measurements</h3><p>Throughput counts exit crossings in the preceding simulated second. The total crossing count includes all passages since the last restart. Mean speed covers people inside the room. Exit density is the number of people in the measurement area divided by its full area. This rectangle extends 4 m into the room and 1 m beyond each side of the opening.</p><p>Person colours indicate relative crowding. The density layer shows local concentration. Path arrows indicate navigation directions and thin lines show recent movement.</p><h3>Geometry</h3><p>The guide angle is measured from the normal to the exit line. Exit offset sets the gap from that line to the near ends of the guide walls.</p><h3>References</h3>${referenceList}`;
+  dictionaries['zh-CN'].methodBody = `<p>人员由圆盘表示，导航场引导其走向出口。局部避让与碰撞约束控制人员绕过其他人和障碍物的运动。距离以米计，时间以模拟秒计。</p><p>持续人流模式中，人员离开后会回到进入区域。选择固定人数模式时，以当前房间内的人员为一组。全组离开后结束。人数和布局可在运行中调整。</p><h3>测量</h3><p>通行率统计最近 1 个模拟秒内的过门人数。累计通过人次记录自上次重新开始后的全部通行。平均速度统计房间内人员。出口区域密度为测量区人数除以完整面积，测量区从出口向房间内延伸 4 米，向出口两侧各延伸 1 米。</p><p>个体颜色表示相对拥挤程度，密度图表示局部聚集程度。路径箭头表示导航方向，细线表示近期移动轨迹。</p><h3>几何</h3><p>导流角度以出口法线为基准。出口间距控制出口线与导流板近端之间的间隔。</p><h3>参考文献</h3>${referenceList}`;
+  dictionaries['zh-TW'].methodBody = `<p>人員由圓盤表示，導航場引導其走向出口。局部避讓與碰撞約束控制人員繞過其他人和障礙物的運動。距離以公尺計，時間以模擬秒計。</p><p>持續人流模式中，人員離開後會回到進入區域。選擇固定人數模式時，以目前房間內的人員為一組。全組離開後結束。人數和配置可在執行中調整。</p><h3>測量</h3><p>通行率統計最近 1 個模擬秒內的過門人數。累計通過人次記錄自上次重新開始後的全部通行。平均速度統計房間內人員。出口區域密度為測量區人數除以完整面積，測量區從出口向房間內延伸 4 公尺，向出口兩側各延伸 1 公尺。</p><p>個體顏色表示相對擁擠程度，密度圖表示局部聚集程度。路徑箭頭表示導航方向，細線表示近期移動軌跡。</p><h3>幾何</h3><p>導流角度以出口法線為基準。出口間距控制出口線與導流板近端之間的間隔。</p><h3>參考文獻</h3>${referenceList}`;
+  dictionaries.en.experimentBody = `<p>Change one parameter at a time and observe the throughput after the flow settles.</p><div class="experiment-card"><span class="experiment-number">EXPERIMENT 01</span><h3>Change the exit width</h3><p>Use an open room. Compare exit widths of 1.2 m, 3.2 m, and 5.2 m while keeping desired speed fixed. Observe throughput and density near the doorway.</p><button class="outline-button compact" data-experiment="width">Set up width experiment</button></div><div class="experiment-card"><span class="experiment-number">EXPERIMENT 02</span><h3>Rotate the guide walls</h3><p>Keep exit width, wall length, and distance from the exit fixed. Compare angles of 0°, 25°, and 50°. Observe where streams merge and where queues form.</p><button class="outline-button compact" data-experiment="angle">Set up angle experiment</button></div><div class="experiment-card"><span class="experiment-number">EXPERIMENT 03</span><h3>Move the column</h3><p>Compare an open room with a central column. In Edit layout, move the column closer to and farther from the doorway. Inspect the paths on both sides, the remaining gaps, and the exit count.</p><button class="outline-button compact" data-experiment="column">Set up column experiment</button></div>`;
+  dictionaries['zh-CN'].experimentBody = `<p>每次只改变一个参数，待人流稳定后观察通行率。</p><div class="experiment-card"><span class="experiment-number">实验 01</span><h3>改变出口宽度</h3><p>使用开放空间，固定期望速度，分别比较 1.2 米、3.2 米和 5.2 米的出口。观察通行率和门口附近的密度。</p><button class="outline-button compact" data-experiment="width">设置出口宽度实验</button></div><div class="experiment-card"><span class="experiment-number">实验 02</span><h3>旋转导流板</h3><p>固定出口宽度、导流板长度及其距出口的距离，比较 0°、25°和 50°三个角度。观察人群在哪里汇流、在哪里排队。</p><button class="outline-button compact" data-experiment="angle">设置导流角度实验</button></div><div class="experiment-card"><span class="experiment-number">实验 03</span><h3>移动立柱</h3><p>比较开放空间与中央立柱布局。进入“编辑布局”，把立柱移近或移离出口。观察两侧路径、剩余通行间隙和累计通过人数。</p><button class="outline-button compact" data-experiment="column">设置立柱位置实验</button></div>`;
+  dictionaries['zh-TW'].experimentBody = `<p>每次只改變一個參數，待人流穩定後觀察通行率。</p><div class="experiment-card"><span class="experiment-number">實驗 01</span><h3>改變出口寬度</h3><p>使用開放空間，固定期望速度，分別比較 1.2 公尺、3.2 公尺和 5.2 公尺的出口。觀察通行率和門口附近的密度。</p><button class="outline-button compact" data-experiment="width">設定出口寬度實驗</button></div><div class="experiment-card"><span class="experiment-number">實驗 02</span><h3>旋轉導流板</h3><p>固定出口寬度、導流板長度及其距出口的距離，比較 0°、25°和 50°三個角度。觀察人群在哪裡匯流、在哪裡排隊。</p><button class="outline-button compact" data-experiment="angle">設定導流角度實驗</button></div><div class="experiment-card"><span class="experiment-number">實驗 03</span><h3>移動立柱</h3><p>比較開放空間與中央立柱配置。進入“編輯配置”，把立柱移近或移離出口。觀察兩側路徑、剩餘通行間隙和累計通過人數。</p><button class="outline-button compact" data-experiment="column">設定立柱位置實驗</button></div>`;
+  window.CROWD_I18N = dictionaries;
+})();
+</script>
+<script>(function () {
+  'use strict'
+
+  const $ = id => document.getElementById(id)
+  const all = selector => Array.from(document.querySelectorAll(selector))
+  const clamp = (v, low, high) => Math.max(low, Math.min(high, v))
+  const supportedLanguages = ['en', 'zh-CN', 'zh-TW']
+  const defaults = { mode: 'continuous', population: 240, desiredSpeed: 1.35, doorWidth: 3.2, guideAngle: 35, guideLength: 6.5, guideOffset: 2.5, preset: 'guided', seed: 42, sourceX: undefined, sourceY: undefined }
+  let language = 'en'
+  try { const stored = localStorage.getItem('crowd-flow-language'); if (supportedLanguages.includes(stored)) language = stored } catch (_) {}
+  let params = { ...defaults }
+  const engine = new CrowdEngine(params)
+  const renderer = new CrowdRenderer($('scene'), engine)
+  const state = { running: true, speed: 1, display: 'people', editing: false, tool: 'select', selectedId: null, preview: null, drag: null, pointerId: null, wallStart: null, wallPointerDown: null, completed: false, completeTime: null, autoStopped: false, nextObject: 1, pendingParams: null, pendingObstacles: null, lastGeometry: 0, chartMax: 5, uiDirty: true }
+  const parameterKeys = ['population', 'desiredSpeed', 'doorWidth', 'guideAngle', 'guideLength', 'guideOffset']
+  let accumulator = 0, lastTime = 0, lastUi = 0, toastTimer = 0, loadSequence = 0, lastUiStamp = ''
+
+  function t(key, replacements) {
+    let value = window.CROWD_I18N[language][key] || window.CROWD_I18N.en[key] || key
+    if (replacements) for (const [name, replacement] of Object.entries(replacements)) value = value.replaceAll('{' + name + '}', String(replacement))
+    return value
+  }
+  const esc = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+  function notify(key, values) {
+    $('toast').textContent = t(key, values)
+    $('toast').classList.add('show')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2600)
+  }
+  function formatTime(seconds) {
+    const tenths = Math.max(0, Math.round(seconds * 10))
+    return String(Math.floor(tenths / 600)).padStart(2, '0') + ':' + ((tenths % 600) / 10).toFixed(1).padStart(4, '0')
+  }
+  const formatNumber = (value, digits = 2) => String(Number(Number(value).toFixed(digits)))
+  function rangeFill(input) { input.style.setProperty('--fill', clamp((Number(input.value) - Number(input.min)) / Math.max(.001, Number(input.max) - Number(input.min)), 0, 1) * 100 + '%') }
+  function setLanguage(lang) {
+    if (!supportedLanguages.includes(lang)) return
+    language = lang
+    document.documentElement.lang = lang === 'en' ? 'en-GB' : lang
+    document.title = t('brand')
+    $('language').value = lang
+    $('language').setAttribute('aria-label', t('languageLabel'))
+    all('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n) })
+    all('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title) })
+    const labels = [['.brand', 'brand'], ['.simulation-panel', 'simulationLabel'], ['.visual-switch', 'displayMode'], ['.speed-control', 'playbackSpeed'], ['.mode-switch', 'simulationMode']]
+    labels.forEach(([selector, key]) => document.querySelector(selector).setAttribute('aria-label', t(key)))
+    $('scene').setAttribute('aria-label', t('sceneLabel'))
+    $('chart').setAttribute('aria-label', t('flowChartLabel'))
+    $('closeDialog').setAttribute('aria-label', t('close'))
+    try { localStorage.setItem('crowd-flow-language', language) } catch (_) {}
+    updateControls(); updateStatus(); updateSelection(); updateStats(); drawChart()
+    if ($('infoDialog').open) renderMethods()
+  }
+  function updateControls() {
+    for (const key of parameterKeys) {
+      const input = $(key)
+      input.value = params[key]
+      rangeFill(input)
+      const number = formatNumber(params[key], key === 'population' ? 0 : 2)
+      const unit = key === 'population' ? '' : key === 'guideAngle' ? '°' : key === 'desiredSpeed' ? 'm/s' : 'm'
+      $(key + 'Output').innerHTML = number + (unit ? ' <small>' + esc(unit) + '</small>' : '')
+      input.setAttribute('aria-valuetext', number + ' ' + (unit || t('peopleUnit')))
+    }
+    $('populationLabel').textContent = t(params.mode === 'continuous' ? 'activePopulation' : 'population')
+    $('guideControls').hidden = params.preset !== 'guided'
+    $('modeHint').textContent = t(params.mode === 'continuous' ? 'modeHintContinuous' : 'modeHintFinite')
+    all('[data-preset]').forEach(button => { const active = button.dataset.preset === params.preset; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active) })
+    all('[data-sim-mode]').forEach(button => { const active = button.dataset.simMode === params.mode; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active) })
+  }
+  function updateStatus() {
+    $('runStatus').textContent = t(state.completed ? 'completed' : state.running ? 'running' : 'paused')
+    $('modeName').textContent = t(params.mode === 'continuous' ? 'modeContinuous' : 'modeFinite')
+    $('liveDot').classList.toggle('paused', !state.running)
+    const playAction = state.completed ? 'runAgain' : state.running ? 'pause' : 'play'
+    $('playLabel').textContent = t(playAction)
+    $('playButton').setAttribute('aria-label', t(playAction))
+    $('playIcon').innerHTML = state.running ? '<path d="M8 5v14M16 5v14"/>' : '<path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/>'
+    $('editButton').classList.toggle('active', state.editing)
+    $('editButton').setAttribute('aria-pressed', state.editing)
+    $('editButton').querySelector('span').textContent = t(state.editing ? 'doneEditing' : 'editLayout')
+    $('canvasWrap').classList.toggle('editing', state.editing)
+    $('editToolbar').hidden = !state.editing
+    $('editHint').hidden = !state.editing
+    $('completeMessage').hidden = !state.completed
+    $('scene').dataset.status = state.running ? 'running' : 'paused'
+    $('scene').dataset.mode = params.mode
+  }
+  function updateStats() {
+    const s = engine.getStats()
+    if (params.mode === 'finite' && s.finished && !state.running && !state.completed) {
+      state.completed = true
+      state.completeTime = s.time
+      updateStatus()
+    }
+    $('timeValue').textContent = formatTime(s.time)
+    $('flowValue').textContent = Math.round(s.flow)
+    $('insideValue').textContent = s.inside
+    $('exitedValue').textContent = params.mode === 'finite' ? s.batchExited : s.totalCrossings
+    $('passedLabel').textContent = t(params.mode === 'finite' ? 'batchProgress' : 'totalCrossings')
+    $('batchTotal').hidden = params.mode !== 'finite'
+    $('batchTotal').textContent = '/ ' + s.requestedTotal
+    $('meanSpeedValue').textContent = s.meanSpeed.toFixed(2)
+    $('densityValue').textContent = s.density.toFixed(2)
+    if (state.completed) $('completionText').textContent = t('completionSummary')
+    return s
+  }
+  function afterLiveChange() {
+    params = { ...engine.params }
+    state.uiDirty = true
+    const s = engine.getStats()
+    if (params.mode === 'continuous' || !s.finished) {
+      state.completed = false
+      state.completeTime = null
+      if (state.autoStopped) { state.running = true; state.autoStopped = false }
+    }
+    updateControls(); updateStatus(); updateStats()
+  }
+  function applyPending(force = false, now = performance.now()) {
+    if (!state.pendingParams && !state.pendingObstacles) return
+    if (!force && now - state.lastGeometry < 48) return
+    if (state.pendingParams) { const changes = state.pendingParams; state.pendingParams = null; engine.setParams(changes) }
+    if (state.pendingObstacles) { const obstacles = state.pendingObstacles; state.pendingObstacles = null; engine.setObstacles(obstacles) }
+    state.lastGeometry = now
+    afterLiveChange()
+  }
+  function queueParams(changes, force = false) {
+    params = { ...params, ...changes }
+    state.pendingParams = { ...state.pendingParams, ...changes }
+    updateControls()
+    if (force) applyPending(true)
+  }
+  function obstaclesNow() { return state.pendingObstacles || engine.getObstacles() }
+  function queueObstacles(list, force = false) {
+    state.pendingObstacles = list.map(ob => ({ ...ob }))
+    params.preset = 'custom'
+    if (force) applyPending(true)
+  }
+  function clearGesture(clearSelection = false) {
+    const pointer = state.pointerId
+    state.pointerId = null
+    state.drag = null
+    state.wallStart = null
+    state.wallPointerDown = null
+    state.preview = null
+    if (clearSelection) state.selectedId = null
+    $('canvasWrap').classList.remove('dragging')
+    if (pointer !== null && $('scene').hasPointerCapture(pointer)) $('scene').releasePointerCapture(pointer)
+  }
+  function restart() {
+    applyPending(true)
+    clearGesture(true)
+    engine.reset(params)
+    params = { ...engine.params }
+    state.completed = false; state.completeTime = null; state.autoStopped = false; state.chartMax = 5
+    state.uiDirty = true
+    accumulator = 0
+    updateControls(); updateStatus(); updateStats(); updateSelection(); drawChart()
+  }
+  function setPreset(preset) {
+    state.pendingObstacles = null
+    clearGesture(true)
+    const changes = { preset }
+    if (preset === 'narrow') changes.doorWidth = 1.2
+    else if (params.preset === 'narrow') changes.doorWidth = 3.2
+    queueParams(changes, true)
+    updateSelection()
+  }
+  function toggleRun() {
+    if (state.completed) { state.running = true; restart() }
+    else { state.running = !state.running; state.autoStopped = false }
+    accumulator = 0
+    state.uiDirty = true
+    updateStats(); updateStatus()
+  }
+  function setDisplay(mode) {
+    state.display = mode
+    all('[data-mode]').forEach(button => { const active = button.dataset.mode === mode; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active) })
+    $('stageLegend').hidden = mode === 'density'
+    $('heatLegend').hidden = mode !== 'density'
+  }
+  function toggleEdit() {
+    applyPending(true)
+    state.editing = !state.editing
+    setTool('select')
+    updateStatus(); updateSelection()
+  }
+  function setTool(tool) {
+    applyPending(true)
+    clearGesture(true)
+    state.tool = tool
+    all('[data-tool]').forEach(button => { const active = button.dataset.tool === tool; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active) })
+    updateSelection()
+  }
+  function updateHint() {
+    const key = state.wallStart ? 'finishWallHint' : state.tool === 'select' ? state.selectedId ? 'selectedHint' : 'selectHint' : state.tool === 'wall' ? 'wallHint' : state.tool === 'circle' ? 'columnHint' : 'sourceHint'
+    $('editHint').textContent = t(key)
+  }
+  function updateSelection() {
+    const ob = obstaclesNow().find(item => item.id === state.selectedId)
+    $('deleteObject').disabled = !ob
+    $('selectionInfo').hidden = !state.editing || !ob
+    $('guideControls').hidden = params.preset !== 'guided' || Boolean(ob && state.editing)
+    if (ob) {
+      $('selectedTitle').textContent = t(ob.type === 'wall' ? 'wallTool' : 'columnTool')
+      $('wallProperties').hidden = ob.type !== 'wall'
+      $('circleProperties').hidden = ob.type !== 'circle'
+      if (ob.type === 'wall') {
+        let angle = Math.atan2(ob.by - ob.ay, ob.bx - ob.ax) * 180 / Math.PI
+        if (angle < 0) angle += 180
+        $('objectRotation').value = formatNumber(angle)
+        $('rotationValue').textContent = formatNumber(angle) + '°'
+        $('objectLength').value = Math.hypot(ob.bx - ob.ax, ob.by - ob.ay)
+        $('objectLengthOutput').textContent = formatNumber(Math.hypot(ob.bx - ob.ax, ob.by - ob.ay)) + ' m'
+        $('objectWidth').value = ob.width
+        $('objectWidthOutput').textContent = formatNumber(ob.width) + ' m'
+      } else {
+        $('objectRadius').value = ob.r
+        $('objectRadiusOutput').textContent = formatNumber(ob.r) + ' m'
+      }
+      for (const [id, output] of [['objectRotation', 'rotationValue'], ['objectLength', 'objectLengthOutput'], ['objectWidth', 'objectWidthOutput'], ['objectRadius', 'objectRadiusOutput']]) $(id).setAttribute('aria-valuetext', $(output).textContent)
+      all('#selectionInfo input[type="range"]').forEach(rangeFill)
+    }
+    updateHint()
+  }
+  const inRoom = p => p.x >= -12.4 && p.x <= 12.4 && p.y >= .6 && p.y <= 26.4
+  const constrain = p => ({ x: clamp(p.x, -12.4, 12.4), y: clamp(p.y, .6, 26.4) })
+  function wallDistance(p, ob) {
+    const dx = ob.bx - ob.ax, dy = ob.by - ob.ay
+    const q = clamp(((p.x - ob.ax) * dx + (p.y - ob.ay) * dy) / Math.max(.00001, dx * dx + dy * dy), 0, 1)
+    return Math.hypot(p.x - ob.ax - dx * q, p.y - ob.ay - dy * q)
+  }
+  function pickObject(p) {
+    let result = null, best = Math.max(.7, 8 / (renderer.scale || 12))
+    for (const ob of obstaclesNow()) {
+      const d = ob.type === 'circle' ? Math.max(0, Math.hypot(p.x - ob.x, p.y - ob.y) - ob.r) : Math.max(0, wallDistance(p, ob) - ob.width / 2)
+      if (d < best) { best = d; result = ob }
+    }
+    return result
+  }
+  function fitObstacle(ob) {
+    const c = { ...ob }
+    if (c.type === 'circle') { c.x = clamp(c.x, -12.6 + c.r, 12.6 - c.r); c.y = clamp(c.y, .4 + c.r, 26.6 - c.r) }
+    else {
+      const margin = c.width / 2 + .25
+      let dx = (c.bx - c.ax) / 2, dy = (c.by - c.ay) / 2
+      const shrink = Math.min(1, (13 - margin) / Math.max(Math.abs(dx), .00001), (13.5 - margin) / Math.max(Math.abs(dy), .00001))
+      dx *= shrink; dy *= shrink
+      const x = clamp((c.ax + c.bx) / 2, -13 + margin + Math.abs(dx), 13 - margin - Math.abs(dx))
+      const y = clamp((c.ay + c.by) / 2, margin + Math.abs(dy), 27 - margin - Math.abs(dy))
+      c.ax = x - dx; c.bx = x + dx; c.ay = y - dy; c.by = y + dy
+    }
+    return c
+  }
+  function addObstacle(ob) {
+    const list = obstaclesNow()
+    if (list.length >= 24) { notify('limitObjects'); return }
+    ob.id = 'object-' + Date.now().toString(36) + '-' + state.nextObject++
+    queueObstacles([...list, fitObstacle(ob)], true)
+    setTool('select')
+    state.selectedId = ob.id
+    updateSelection()
+  }
+  function createWall(a, b) {
+    if (Math.hypot(a.x - b.x, a.y - b.y) < .8) return
+    addObstacle({ type: 'wall', ax: a.x, ay: a.y, bx: b.x, by: b.y, width: .38, height: 1.2, kind: 'obstacle', editable: true })
+  }
+  function updateObject(copy, force = false) { queueObstacles(obstaclesNow().map(ob => ob.id === copy.id ? fitObstacle(copy) : ob), force) }
+  $('scene').addEventListener('pointerdown', event => {
+    if (!state.editing || event.isPrimary === false || state.pointerId !== null || event.button !== 0 && event.pointerType !== 'touch') return
+    event.preventDefault()
+    $('scene').focus({ preventScroll: true })
+    const raw = renderer.screenToWorld(event.clientX, event.clientY)
+    if (!inRoom(raw)) { state.selectedId = null; updateSelection(); return }
+    const p = constrain(raw)
+    if (state.tool === 'select') {
+      const ob = pickObject(p)
+      state.selectedId = ob ? ob.id : null
+      if (ob) { state.drag = { start: p, object: { ...ob }, moved: false }; state.pointerId = event.pointerId; $('scene').setPointerCapture(event.pointerId) }
+      updateSelection()
+    } else if (state.tool === 'circle') addObstacle({ type: 'circle', x: p.x, y: p.y, r: .9, height: 1.2, editable: true, kind: 'obstacle' })
+    else if (state.tool === 'source') { applyPending(true); engine.moveSource(p.x, p.y); afterLiveChange(); notify('sourceMoved') }
+    else if (state.tool === 'wall') {
+      if (state.wallStart) { const start = state.wallStart; state.wallStart = null; createWall(start, p); state.preview = null }
+      else { state.wallStart = p; state.wallPointerDown = p; state.pointerId = event.pointerId; $('scene').setPointerCapture(event.pointerId) }
+      updateHint()
+    }
+  })
+  $('scene').addEventListener('pointermove', event => {
+    if (!state.editing || event.isPrimary === false || state.pointerId !== null && state.pointerId !== event.pointerId) return
+    const p = constrain(renderer.screenToWorld(event.clientX, event.clientY))
+    if (state.drag) {
+      const dx = p.x - state.drag.start.x, dy = p.y - state.drag.start.y
+      if (Math.hypot(dx, dy) <= .04 && !state.drag.moved) return
+      state.drag.moved = true
+      const original = state.drag.object
+      const copy = original.type === 'circle' ? { ...original, x: original.x + dx, y: original.y + dy } : { ...original, ax: original.ax + dx, ay: original.ay + dy, bx: original.bx + dx, by: original.by + dy }
+      updateObject(copy)
+      $('canvasWrap').classList.add('dragging')
+    } else if (state.wallStart) state.preview = { type: 'wall', ax: state.wallStart.x, ay: state.wallStart.y, bx: p.x, by: p.y, width: .38, height: 1.2 }
+    else if (state.tool === 'circle') state.preview = fitObstacle({ type: 'circle', x: p.x, y: p.y, r: .9, height: 1.2 })
+  })
+  function releasePointer(event) {
+    if (state.pointerId !== null && state.pointerId !== event.pointerId) return
+    if (event.type === 'pointercancel') { applyPending(true); clearGesture(); updateSelection(); return }
+    if (state.drag) { applyPending(true); state.drag = null; state.preview = null; updateSelection() }
+    else if (state.wallStart && state.wallPointerDown && event.type !== 'pointercancel') {
+      const p = constrain(renderer.screenToWorld(event.clientX, event.clientY))
+      if (Math.hypot(p.x - state.wallPointerDown.x, p.y - state.wallPointerDown.y) > .9) { const start = state.wallStart; state.wallStart = null; createWall(start, p); state.preview = null }
+    }
+    state.wallPointerDown = null
+    state.pointerId = null
+    $('canvasWrap').classList.remove('dragging')
+    if ($('scene').hasPointerCapture(event.pointerId)) $('scene').releasePointerCapture(event.pointerId)
+    updateHint()
+  }
+  $('scene').addEventListener('pointerup', releasePointer)
+  $('scene').addEventListener('pointercancel', releasePointer)
+  $('scene').addEventListener('lostpointercapture', event => { if (state.pointerId === event.pointerId) { applyPending(true); clearGesture(); updateSelection() } })
+  $('scene').addEventListener('pointerleave', () => { if (!state.drag && !state.wallStart) state.preview = null })
+  $('deleteObject').addEventListener('click', () => { if (!state.selectedId) return; const list = obstaclesNow().filter(ob => ob.id !== state.selectedId); clearGesture(true); queueObstacles(list, true); updateSelection() })
+  for (const id of ['objectRotation', 'objectLength', 'objectWidth', 'objectRadius']) {
+    $(id).addEventListener('input', () => {
+      const ob = obstaclesNow().find(item => item.id === state.selectedId)
+      if (!ob) return
+      const copy = { ...ob }, value = Number($(id).value)
+      if (id === 'objectRadius') copy.r = value
+      else if (id === 'objectWidth') copy.width = value
+      else {
+        const length = id === 'objectLength' ? value : Math.hypot(ob.bx - ob.ax, ob.by - ob.ay)
+        const angle = id === 'objectRotation' ? value * Math.PI / 180 : Math.atan2(ob.by - ob.ay, ob.bx - ob.ax)
+        const x = (ob.ax + ob.bx) / 2, y = (ob.ay + ob.by) / 2
+        const dx = Math.cos(angle) * length / 2, dy = Math.sin(angle) * length / 2
+        copy.ax = x - dx; copy.ay = y - dy; copy.bx = x + dx; copy.by = y + dy
+      }
+      updateObject(copy)
+      updateSelection()
+    })
+    $(id).addEventListener('change', () => { applyPending(true); updateSelection() })
+  }
+  function download(name, text, type) {
+    let url, anchor
+    try {
+      url = URL.createObjectURL(new Blob([text], { type }))
+      anchor = document.createElement('a'); anchor.href = url; anchor.download = name
+      document.body.appendChild(anchor); anchor.click()
+      return true
+    } catch (_) { notify('downloadFailed'); return false }
+    finally { if (anchor) anchor.remove(); if (url) setTimeout(() => URL.revokeObjectURL(url), 30000) }
+  }
+  function exportScene() {
+    applyPending(true)
+    const data = { format: 'crowd-flow-scene', version: 2, parameters: { ...params }, obstacles: engine.getObstacles() }
+    if (download('crowd-flow-scene.json', JSON.stringify(data, null, 2), 'application/json;charset=utf-8')) notify('sceneSaved')
+  }
+  function validateScene(data) {
+    if (!data || data.format !== 'crowd-flow-scene' || ![1, 2].includes(data.version) || !data.parameters || typeof data.parameters !== 'object' || Array.isArray(data.parameters) || !Array.isArray(data.obstacles) || data.obstacles.length > 24) throw new Error('invalid')
+    const p = data.parameters
+    const ranges = { population: [0, 680], desiredSpeed: [.6, 3], doorWidth: [1.2, 7], guideAngle: [0, 65], guideLength: [2, 9], guideOffset: [1, 6], seed: [1, 999999] }
+    for (const [key, limits] of Object.entries(ranges)) if (typeof p[key] !== 'number' || !Number.isFinite(p[key]) || p[key] < limits[0] || p[key] > limits[1]) throw new Error('invalid')
+    if (!Number.isInteger(p.population) || !Number.isInteger(p.seed) || !['open', 'guided', 'column', 'narrow', 'custom'].includes(p.preset)) throw new Error('invalid')
+    const mode = p.mode === undefined ? (data.version === 1 ? 'finite' : 'continuous') : p.mode
+    if (!['continuous', 'finite'].includes(mode)) throw new Error('invalid')
+    const clean = { ...Object.fromEntries(Object.keys(ranges).map(key => [key, p[key]])), mode, preset: p.preset, sourceX: undefined, sourceY: undefined }
+    for (const key of ['sourceX', 'sourceY']) if (p[key] !== undefined) { if (typeof p[key] !== 'number' || !Number.isFinite(p[key])) throw new Error('invalid'); clean[key] = clamp(p[key], key === 'sourceX' ? -12.4 : .6, key === 'sourceX' ? 12.4 : 26.4) }
+    const list = data.obstacles.map((ob, index) => {
+      if (!ob || !['wall', 'circle'].includes(ob.type)) throw new Error('invalid')
+      const fields = ob.type === 'circle' ? ['x', 'y', 'r', 'height'] : ['ax', 'ay', 'bx', 'by', 'width', 'height']
+      if (fields.some(key => typeof ob[key] !== 'number' || !Number.isFinite(ob[key])) || ob.height < .2 || ob.height > 3) throw new Error('invalid')
+      if (ob.type === 'circle' && (!inRoom(ob) || ob.r < .25 || ob.r > 4)) throw new Error('invalid')
+      if (ob.type === 'wall' && (Math.abs(ob.ax) > 13 || Math.abs(ob.bx) > 13 || ob.ay < 0 || ob.ay > 27 || ob.by < 0 || ob.by > 27 || ob.width < .18 || ob.width > 3)) throw new Error('invalid')
+      return fitObstacle({ ...Object.fromEntries(fields.map(key => [key, ob[key]])), id: 'loaded-' + index, type: ob.type, kind: ob.kind === 'guide' ? 'guide' : 'obstacle', editable: true })
+    })
+    return { parameters: clean, obstacles: list }
+  }
+  $('sceneFile').addEventListener('change', async event => {
+    const request = ++loadSequence
+    const file = event.target.files[0]
+    event.target.value = ''
+    if (!file) return
+    if (file.size > 1000000) { notify('sceneTooLarge'); return }
+    try {
+      const text = await file.text()
+      if (request !== loadSequence) return
+      const data = validateScene(JSON.parse(text))
+      state.pendingParams = null; state.pendingObstacles = null
+      clearGesture(true)
+      engine.setParams(data.parameters)
+      if (data.parameters.preset === 'custom') engine.setObstacles(data.obstacles)
+      afterLiveChange(); updateSelection(); notify('sceneLoaded')
+    } catch (_) { if (request === loadSequence) notify('sceneInvalid') }
+  })
+  function exportCsv() {
+    applyPending(true)
+    const current = engine.getStats(), rows = current.history.slice()
+    if (rows.length && Math.abs(rows.at(-1).time - current.time) <= .01) rows[rows.length - 1] = current
+    else rows.push(current)
+    const fields = ['time', 'mode', 'flow', 'flow5', 'totalCrossings', 'batchTotal', 'batchExited', 'inside', 'active', 'population', 'desiredSpeed', 'doorWidth', 'guideAngle', 'guideLength', 'guideOffset', 'preset', 'seed', 'meanSpeed', 'density']
+    const headers = ['simulation_time_s', 'mode', 'crossings_last_1s', 'flow_last_5s_people_per_s', 'total_crossings', 'batch_total', 'batch_exited', 'inside_room', 'active_population', 'target_population', 'desired_speed_m_per_s', 'exit_width_m', 'guide_angle_deg', 'guide_length_m', 'guide_distance_m', 'layout', 'seed', 'mean_speed_m_per_s', 'exit_density_people_per_m2']
+    const lines = rows.map(s => fields.map(key => typeof s[key] === 'number' ? Number(s[key].toFixed(4)) : s[key] ?? '').join(','))
+    download('crowd-flow-data.csv', '\uFEFF' + headers.join(',') + '\r\n' + lines.join('\r\n') + '\r\n', 'text/csv;charset=utf-8')
+  }
+  function drawChart(snapshot) {
+    const canvas = $('chart'), rect = canvas.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1)
+    const w = Math.max(1, rect.width), h = Math.max(1, rect.height)
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr) }
+    const c = canvas.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h)
+    const s = snapshot && Number.isFinite(snapshot.time) ? snapshot : engine.getStats(), maxTime = Math.max(60, s.time), minTime = maxTime - 60
+    const series = []
+    for (let i = s.history.length - 1; i >= 0 && s.history[i].time >= minTime; i--) series.push(s.history[i])
+    series.reverse()
+    if (series.length && Math.abs(series[series.length - 1].time - s.time) < .0001) series[series.length - 1] = s
+    else series.push(s)
+    state.chartMax = Math.max(state.chartMax, Math.ceil(Math.max(...series.map(sample => sample.flow), 1) / 5) * 5)
+    const ymax = state.chartMax, left = 22, right = w - 9, top = 6, bottom = h - 17
+    c.font = '10px Arial, sans-serif'; c.textBaseline = 'middle'
+    for (let i = 0; i <= 2; i++) {
+      const y = bottom - (bottom - top) * i / 2
+      c.beginPath(); c.moveTo(left, y); c.lineTo(right, y); c.strokeStyle = '#edf1e7'; c.lineWidth = 1; c.stroke()
+      c.fillStyle = '#708167'; c.textAlign = 'right'; c.fillText((ymax * i / 2).toString(), left - 6, y)
+    }
+    for (let i = 0; i <= 3; i++) { const x = left + (right - left) * i / 3; c.fillStyle = '#708167'; c.textAlign = 'center'; c.fillText(Math.floor(minTime + 60 * i / 3) + 's', x, bottom + 11) }
+    const point = sample => ({ x: left + (sample.time - minTime) / 60 * (right - left), y: bottom - sample.flow / ymax * (bottom - top) })
+    const fill = c.createLinearGradient(0, top, 0, bottom); fill.addColorStop(0, '#7f9f682b'); fill.addColorStop(1, '#7f9f6803')
+    c.beginPath(); c.moveTo(series.length ? point(series[0]).x : left, bottom)
+    series.forEach(sample => { const p = point(sample); c.lineTo(p.x, p.y) })
+    c.lineTo(point(s).x, bottom); c.closePath(); c.fillStyle = fill; c.fill()
+    c.beginPath(); series.forEach((sample, i) => { const p = point(sample); i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y) })
+    c.strokeStyle = '#769964'; c.lineWidth = 1.65; c.lineJoin = 'round'; c.stroke()
+    const last = point(s); c.beginPath(); c.arc(last.x, last.y, 2.3, 0, Math.PI * 2); c.fillStyle = '#5e864e'; c.fill()
+  }
+  function renderMethods() { $('dialogTitle').textContent = t('methodTitle'); $('dialogContent').innerHTML = t('methodBody') }
+  for (const key of parameterKeys) {
+    $(key).addEventListener('input', () => { state.selectedId = null; queueParams({ [key]: Number($(key).value) }); updateSelection() })
+    $(key).addEventListener('change', () => applyPending(true))
+  }
+  $('language').addEventListener('change', event => setLanguage(event.target.value))
+  $('playButton').addEventListener('click', toggleRun)
+  $('resetButton').addEventListener('click', restart)
+  $('repeatRun').addEventListener('click', () => { state.running = true; restart() })
+  $('restoreButton').addEventListener('click', () => { state.pendingObstacles = null; clearGesture(true); queueParams({ ...defaults, mode: params.mode }, true); updateSelection() })
+  $('editButton').addEventListener('click', toggleEdit)
+  all('[data-mode]').forEach(button => button.addEventListener('click', () => setDisplay(button.dataset.mode)))
+  all('[data-sim-mode]').forEach(button => button.addEventListener('click', () => { applyPending(true); engine.setParams({ mode: button.dataset.simMode }); afterLiveChange(); updateSelection() }))
+  all('[data-speed]').forEach(button => button.addEventListener('click', () => { state.speed = Number(button.dataset.speed); all('[data-speed]').forEach(other => { other.classList.toggle('active', other === button); other.setAttribute('aria-pressed', other === button) }) }))
+  all('[data-preset]').forEach(button => button.addEventListener('click', () => setPreset(button.dataset.preset)))
+  all('[data-tool]').forEach(button => button.addEventListener('click', () => setTool(button.dataset.tool)))
+  $('saveScene').addEventListener('click', exportScene)
+  $('loadScene').addEventListener('click', () => $('sceneFile').click())
+  $('exportCsv').addEventListener('click', exportCsv)
+  $('methodButton').addEventListener('click', () => { renderMethods(); $('infoDialog').showModal() })
+  $('closeDialog').addEventListener('click', () => $('infoDialog').close())
+  $('infoDialog').addEventListener('click', event => { if (event.target === $('infoDialog')) { const r = $('infoDialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('infoDialog').close() } })
+  document.addEventListener('keydown', event => {
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName) || $('infoDialog').open || event.ctrlKey || event.metaKey || event.altKey) return
+    if (event.code === 'Space' && [document.body, $('scene')].includes(event.target)) { event.preventDefault(); if (!event.repeat) toggleRun() }
+    if (event.key.toLowerCase() === 'r' && !event.repeat) restart()
+    if (event.key === 'Escape' && state.editing) setTool('select')
+    if (state.editing && event.target === $('scene')) {
+      if (['[', ']'].includes(event.key)) {
+        event.preventDefault()
+        applyPending(true)
+        clearGesture()
+        const list = obstaclesNow(), current = list.findIndex(ob => ob.id === state.selectedId)
+        if (list.length) { const index = current < 0 ? event.key === ']' ? 0 : list.length - 1 : (current + (event.key === ']' ? 1 : -1) + list.length) % list.length; state.selectedId = list[index].id }
+        state.tool = 'select'
+        all('[data-tool]').forEach(button => { const active = button.dataset.tool === 'select'; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active) })
+        updateSelection()
+      }
+      const direction = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key]
+      if (direction && state.selectedId) {
+        event.preventDefault()
+        const ob = obstaclesNow().find(item => item.id === state.selectedId)
+        if (ob) { const amount = event.shiftKey ? 1 : .25, dx = direction[0] * amount, dy = direction[1] * amount; const copy = ob.type === 'circle' ? { ...ob, x: ob.x + dx, y: ob.y + dy } : { ...ob, ax: ob.ax + dx, ay: ob.ay + dy, bx: ob.bx + dx, by: ob.by + dy }; updateObject(copy, true); updateSelection() }
+      }
+    }
+    if (['Delete', 'Backspace'].includes(event.key) && state.editing && state.selectedId) { event.preventDefault(); $('deleteObject').click() }
+  })
+  document.addEventListener('visibilitychange', () => { lastTime = 0; accumulator = 0; if (document.hidden) { applyPending(true); clearGesture(); updateSelection() } })
+  window.addEventListener?.('blur', () => { applyPending(true); clearGesture(); updateSelection() })
+  new ResizeObserver(() => { renderer.resize(); document.querySelector('.scale-bar span').style.width = renderer.getScaleBarPixels() + 'px'; drawChart() }).observe($('canvasWrap'))
+  new ResizeObserver(drawChart).observe($('chart'))
+  let lastDrawStamp = '';
+  function frame(now) {
+    if (document.hidden) { lastTime = 0; accumulator = 0; lastDrawStamp = ''; requestAnimationFrame(frame); return }
+    if (!lastTime) lastTime = now
+    const delta = Math.min(.12, (now - lastTime) / 1000)
+    lastTime = now
+    applyPending(false, now)
+    if (state.running && !document.hidden) {
+      accumulator += delta * state.speed
+      let steps = 0
+      while (accumulator >= 1 / 30 && steps < 15) {
+        engine.step(1 / 30); accumulator -= 1 / 30; steps++
+        if (params.mode === 'finite') {
+          const finished = engine.batchTotal > 0 && engine.batchRemaining === 0 && engine.unplaced === 0
+          if (finished && state.completeTime === null) state.completeTime = engine.time
+          if (!finished) state.completeTime = null
+          if (state.completeTime !== null && (engine.time - state.completeTime > 7 || engine.active === 0)) {
+            state.running = false; state.completed = true; state.autoStopped = true; accumulator = 0; updateStatus(); break
+          }
+        }
+      }
+      if (steps >= 15) accumulator = 0
+    }
+    const drawStamp = [engine.time, engine.geometryVersion, engine.membershipVersion, state.display, state.selectedId, language, state.editing, state.running, state.speed, JSON.stringify(state.preview), !!state.drag, $('scene').width, $('scene').height].join(':');
+    if (state.running || state.uiDirty || state.drag || state.preview || drawStamp !== lastDrawStamp) {
+    renderer.draw({ mode: state.display, selectedId: state.selectedId, preview: state.preview, time: engine.time, lang: language, editing: state.editing, running: state.running, playbackSpeed: state.speed })
+    lastDrawStamp = drawStamp;
+    }
+    const uiStamp = engine.time + ':' + engine.geometryVersion + ':' + engine.membershipVersion
+    if (now - lastUi > 150 && (state.uiDirty || uiStamp !== lastUiStamp)) { const snapshot = updateStats(); drawChart(snapshot); lastUi = now; lastUiStamp = uiStamp; state.uiDirty = false }
+    requestAnimationFrame(frame)
+  }
+  setLanguage(language)
+  requestAnimationFrame(frame)
+})()
+</script>
+</body>
+</html>
