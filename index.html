@@ -82,7 +82,18 @@ svg rect{rx:0!important;ry:0!important}
 input::-webkit-slider-thumb,input::-webkit-slider-runnable-track,input::-webkit-color-swatch,input::-webkit-color-swatch-wrapper{border-radius:0!important}
 input::-moz-range-thumb,input::-moz-range-track,input::-moz-color-swatch{border-radius:0!important}
 </style>
-</head>
++<style id="fionviber-template-refresh">/* FionViber Website Template refresh. Application logic and content remain intact. */
+:root{--template-shadow:4px 4px 0 var(--navy);--template-shadow-soft:4px 4px 0 var(--line)}
+.topbar,.site-header,header{box-shadow:0 4px 0 var(--navy)}
+.card,.experiment-card,.controls-panel,.simulation-panel,.lib,.right,.grp{box-shadow:var(--template-shadow-soft);transition:box-shadow .18s ease,transform .18s ease}
+.card:focus-within,.experiment-card:focus-within,.controls-panel:focus-within,.simulation-panel:focus-within,.lib:focus-within,.right:focus-within{box-shadow:var(--template-shadow);transform:translate(-1px,-1px)}
+.btn,.button,.mode-tab,.play-button,.outline-button,.icon-button,.text-button{transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}
+.btn:hover:not(:disabled),.button:hover:not(:disabled),.mode-tab:hover,.play-button:hover,.outline-button:hover,.icon-button:hover,.text-button:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--navy)}
+.btn:active:not(:disabled),.button:active:not(:disabled),.play-button:active{transform:translate(0,0);box-shadow:none}
+input,select,textarea{transition:border-color .18s ease,box-shadow .18s ease}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+@media (prefers-reduced-motion:reduce){.card,.experiment-card,.controls-panel,.simulation-panel,.lib,.right,.grp,.btn,.button,.mode-tab,.play-button,.outline-button,.icon-button,.text-button,input,select,textarea{transition:none}}
+</style></head>
 <body>
 <header class="site-header">
   <a class="brand" href="#workspace"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M8 29V11h9m15 0v18h-9"/><path d="M15 20h11m-4-4 4 4-4 4"/></svg></span><h1 data-i18n="brand">Crowd Flow Laboratory</h1></a>
